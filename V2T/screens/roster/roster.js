@@ -1,27 +1,65 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import Profile from "../../components/profile";
+import Header from "../../components/header";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import PlayerList from "./playerList";
 
 const Roster = () => {
-	const data = [1, 2, 3, 4];
+	const data = [
+		{
+			name: "Player 1",
+			position: "QB",
+			age: 21,
+		},
+		{
+			name: "Player 2",
+			position: "QB",
+			age: 21,
+		},
+		{
+			name: "Player 3",
+			position: "QB",
+			age: 21,
+		},
+		{
+			name: "Player 4",
+			position: "QB",
+			age: 21,
+		},
+		{
+			name: "Player 1",
+			position: "QB",
+			age: 21,
+		},
+		{
+			name: "Player 2",
+			position: "QB",
+			age: 21,
+		},
+		{
+			name: "Player 3",
+			position: "QB",
+			age: 21,
+		},
+		{
+			name: "Player 4",
+			position: "QB",
+			age: 21,
+		},
+	];
 	return (
-		<View style={styles.container}>
-			<View>
-				{data.map((i) => {
-					return <Profile key={i} />;
-				})}
-			</View>
-		</View>
+		<SafeAreaView style={styles.container}>
+			<Header title="PLAYER ROSTER" />
+			<PlayerList data={data}/>
+		</SafeAreaView>
 	);
 };
 
 const styles = StyleSheet.create({
 	container: {
 		height: "100%",
-		borderWidth: 5,
-		borderColor: "#fff",
 		alignItems: "center",
-		justifyContent: "center",
+		backgroundColor: "#999999",
 	},
 });
 
