@@ -15,14 +15,14 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "light grey",
         height: 30,
-        marginVertical: 10,
+        marginTop: 15,
         alignSelf: "flex-start",
-        marginLeft: "15%"
+        marginLeft: "10%",
     },
     textStyle: {
         color: "white",
         fontWeight: "bold",
-        fontSize: 20,
+        fontSize: 17
 	},
 })
 

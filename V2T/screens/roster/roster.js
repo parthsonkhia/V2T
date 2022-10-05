@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import Header from "../../components/header";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import PlayerList from "./playerList";
 
 const Roster = () => {
@@ -48,10 +48,9 @@ const Roster = () => {
 		},
 	];
 	return (
-		<SafeAreaView style={styles.container}>
-			<Header title="PLAYER ROSTER" />
+		<View style={styles.container}>
 			<PlayerList data={data}/>
-		</SafeAreaView>
+		</View>
 	);
 };
 

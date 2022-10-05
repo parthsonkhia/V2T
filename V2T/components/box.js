@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 const Box = (props) => {
+    
     return (
         <View style={[styles.container, {marginTop: props.marginTop}]}>
             <Text style={styles.textStyle}>{props.text}</Text>
@@ -11,14 +12,14 @@ const Box = (props) => {
 
 const styles = StyleSheet.create({
     container: {
-        borderWidth: 2,
-        borderColor: "white",
+        borderWidth: 1,
         justifyContent: 'center',
         alignItems: "center",
         backgroundColor: "light grey",
-        width: "70%",
-        height: 70,
-        marginVertical: 10
+        width: "80%",
+        height: 50,
+        marginVertical: 5,
+        borderRadius: 5
     },
     textStyle: {
         color: "white",
