@@ -14,17 +14,25 @@ const Recording = (props) => {
 		// 	encoding: FileSystem.EncodingType.Base64,
 		// }).then((res) => {
 		let formBody = new FormData();
-		formBody.append("file", recording.file);
+		let uri = recording.file;
+		let uriParts = uri.split(".");
+		let fileType = uriParts[uriParts.length - 1];
+		formBody.append("file", {
+			uri,
+			name: `recording.${fileType}`,
+			type: `audio/x-${fileType}`,
+		});
 		axios({
 			method: "post",
 			url: baseURL + "/transcribe_file",
 			data: formBody,
 			headers: {
+				Accept: "application/json",
 				"Content-Type": "multipart/form-data",
 			},
 		})
 			.then((response) => {
-				console.log(response);
+				console.log(response.data.result.text);
 			})
 			.catch((err) => {
 				console.error(err.response.data);
