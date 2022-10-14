@@ -18,7 +18,7 @@ export default function Record() {
 				});
 
 				const { recording } = await Audio.Recording.createAsync(
-					Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+					Audio.RecordingOptionsPresets.HIGH_QUALITY
 				);
 
 				setRecording(recording);
@@ -36,12 +36,15 @@ export default function Record() {
 
 		let updatedRecordings = [...recordings];
 		const { sound, status } = await recording.createNewLoadedSoundAsync();
-		updatedRecordings.push({
+		const newRecordingObject = {
 			sound: sound,
 			duration: getDurationFormatted(status.durationMillis),
 			file: recording.getURI(),
-		});
+		};
 
+		
+
+		updatedRecordings.push(newRecordingObject);
 		setRecordings(updatedRecordings);
 	}
 
@@ -56,8 +59,13 @@ export default function Record() {
 	function getRecordingLines() {
 		return recordings.map((recordingLine, index) => {
 			return (
-				<Recording index={index} recordingLine={recordingLine} recordings={recordings} setRecordings={setRecordings} />
-			)
+				<Recording
+					index={index}
+					recordingLine={recordingLine}
+					recordings={recordings}
+					setRecordings={setRecordings}
+				/>
+			);
 		});
 	}
 
