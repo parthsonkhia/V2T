@@ -1,64 +1,40 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
-import Header from "../../components/header";
-import { SafeAreaView } from "react-native-safe-area-context";
 import PlayerList from "./playerList";
+import axios from "axios";
 
 const Roster = () => {
-	const data = [
-		{
-			name: "Player 1",
-			position: "QB",
-			age: 21,
-		},
-		{
-			name: "Player 2",
-			position: "QB",
-			age: 21,
-		},
-		{
-			name: "Player 3",
-			position: "QB",
-			age: 21,
-		},
-		{
-			name: "Player 4",
-			position: "QB",
-			age: 21,
-		},
-		{
-			name: "Player 1",
-			position: "QB",
-			age: 21,
-		},
-		{
-			name: "Player 2",
-			position: "QB",
-			age: 21,
-		},
-		{
-			name: "Player 3",
-			position: "QB",
-			age: 21,
-		},
-		{
-			name: "Player 4",
-			position: "QB",
-			age: 21,
-		},
-	];
+	const [data, setData] = useState([]);
+
+	const baseURL = "https://data.mongodb-api.com/app/data-ahunl/endpoint";
+	const arg1 = "DEF";
+
+	useEffect(() => {
+		axios({
+			method: "get",
+			url: baseURL + "/roster_details?arg1=" + arg1,
+		})
+			.then((response) => {
+				console.log(1);
+				setData(response.data);
+			})
+			.catch((err) => {
+				console.error(err);
+			});
+	}, []);
+
 	return (
 		<View style={styles.container}>
-			<PlayerList data={data}/>
+			<PlayerList data={data} />
 		</View>
 	);
 };
 
 const styles = StyleSheet.create({
 	container: {
+		width: "100%",
 		height: "100%",
 		alignItems: "center",
-		backgroundColor: "#999999",
 	},
 });
 

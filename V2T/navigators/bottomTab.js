@@ -1,6 +1,5 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import History from "../screens/history/history";
 import Roster from "../screens/roster/roster";
 import Profile from "../screens/profile/profile";
 import { Feather } from "@expo/vector-icons";

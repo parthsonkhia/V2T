@@ -22,9 +22,10 @@ const Recording = () => {
 	const [mostRecentRecording, setMostRecentRecording] = useState();
 	const [currentTranscript, setCurrentTranscript] = useState("");
 	const [previousRecordings, setPreviousRecordings] = useState([]);
+	const [mic, setMic] = useState(false);
 	const [isEditable, setIsEditable] = useState(false);
 	const [showHistory, setShowHistory] = useState(false);
-	const [showTranscript, setShowTranscript] = useState(false);
+	const [showTranscript, setShowTranscript] = useState(-1);
 	const [loading, setLoading] = useState(false);
 	const baseURL = "http://3.139.78.213";
 
@@ -33,6 +34,7 @@ const Recording = () => {
 			if (mostRecentRecording) {
 				saveCurrentRecording();
 			}
+			setMic(true);
 			setShowHistory(false);
 			setIsEditable(false);
 			const permission = await Audio.requestPermissionsAsync();
@@ -64,6 +66,7 @@ const Recording = () => {
 	const stopRecording = async () => {
 		setRecording(undefined);
 		setIsEditable(false);
+		setMic(false);
 		await recording.stopAndUnloadAsync();
 		await Audio.setAudioModeAsync({
 			allowsRecordingIOS: false,
@@ -125,9 +128,10 @@ const Recording = () => {
 		let updatedPreviousRecordings = previousRecordings.filter(
 			(rcd, i) => i != index
 		);
+		console.log(updatedPreviousRecordings);
 		setMostRecentRecording(undefined);
 		setPreviousRecordings(updatedPreviousRecordings);
-		setCurrentTranscript("Record a new audio");
+		setCurrentTranscript("");
 		setIsEditable(false);
 		setLoading(false);
 	};
@@ -141,6 +145,14 @@ const Recording = () => {
 		setMostRecentRecording(undefined);
 		setCurrentTranscript("");
 		setIsEditable(false);
+	};
+
+	const handleShowTranscript = (index) => {
+		if (showTranscript == index) {
+			setShowTranscript(-1);
+		} else {
+			setShowTranscript(index);
+		}
 	};
 
 	return (
@@ -160,25 +172,33 @@ const Recording = () => {
 									<Feather name="play" size={24} color="black" />
 								</TouchableOpacity>
 								<TouchableOpacity
-									onPress={() => handleDelete(-1)}
+									onPress={() => handleDelete(previousRecordings.length - 1)}
 									style={styles.button}
 								>
 									<AntDesign name="delete" size={24} color="black" />
 								</TouchableOpacity>
 							</View>
 						</View>
-					) : (
+					) : previousRecordings.length > 0 && !mic ? (
 						<View>
 							<Button
 								title={!showHistory ? "Show history" : "Hide History"}
-								onPress={() => setShowHistory(!showHistory)}
+								onPress={() => {
+									setShowHistory(!showHistory);
+									setShowTranscript(-1);
+								}}
 							/>
 							{showHistory ? (
 								<View>
 									{previousRecordings.map((recording, index) => {
 										return (
-											<View>
-												<View style={styles.recordingBoxContainer} key={index}>
+											<View key={index}>
+												<View
+													style={[
+														styles.recordingBoxContainer,
+														{ borderBottomWidth: 0 },
+													]}
+												>
 													<Text style={styles.recordingNameText}>
 														Recording {index + 1} - {recording.duration}
 													</Text>
@@ -187,7 +207,7 @@ const Recording = () => {
 															onPress={() => recording.sound.replayAsync()}
 															style={styles.button}
 														>
-															<Feather name="play" size={24} color="black" />
+															<Feather name="play" size={26} color="black" />
 														</TouchableOpacity>
 														<TouchableOpacity
 															onPress={() => handleDelete(index)}
@@ -195,25 +215,27 @@ const Recording = () => {
 														>
 															<AntDesign
 																name="delete"
-																size={24}
+																size={26}
 																color="black"
 															/>
 														</TouchableOpacity>
 														<TouchableOpacity
-															onPress={() => setShowTranscript(!showTranscript)}
+															onPress={() => handleShowTranscript(index)}
 															style={styles.button}
 														>
 															<MaterialIcons
 																name="translate"
-																size={24}
+																size={26}
 																color="black"
 															/>
 														</TouchableOpacity>
 													</View>
 												</View>
-												{showTranscript ? (
-													<View>
-														<Text>{recording.transcript}</Text>
+												{showTranscript == index ? (
+													<View style={styles.transcriptBoxStyle}>
+														<Text style={styles.transcriptBoxText}>
+															{recording.transcript}
+														</Text>
 													</View>
 												) : null}
 											</View>
@@ -222,7 +244,7 @@ const Recording = () => {
 								</View>
 							) : null}
 						</View>
-					)}
+					) : null}
 					<View style={styles.translatedTextBox}>
 						{!loading ? (
 							<TextInput
@@ -316,7 +338,7 @@ const styles = StyleSheet.create({
 		marginBottom: 10,
 	},
 	recordingButtonContainer: {
-		width: "30%",
+		width: "35%",
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
@@ -343,6 +365,15 @@ const styles = StyleSheet.create({
 		borderRadius: 15,
 		justifyContent: "center",
 		alignItems: "center",
+	},
+	transcriptBoxStyle: {
+		padding: 5,
+		justifyContent: "center",
+		borderBottomWidth: 1,
+		borderColor: "silver",
+	},
+	transcriptBoxText: {
+		fontSize: 17,
 	},
 });
 

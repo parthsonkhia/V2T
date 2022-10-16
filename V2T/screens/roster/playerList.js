@@ -4,15 +4,22 @@ import Profile from "../../components/profile";
 
 export default function PlayerList(props) {
 	return (
-		<ScrollView showsVerticalScrollIndicator={false} style={styles.scrollViewStyle}>
+		<ScrollView
+			showsVerticalScrollIndicator={false}
+			style={styles.scrollViewStyle}
+		>
 			<View style={styles.container}>
 				{props.data.map((obj, i) => {
 					return (
 						<Profile
 							key={i}
+							photo={obj.imageUrl}
 							name={obj.name}
-							position={obj.position}
+							jersey={obj.jersey}
 							age={obj.age}
+							weight={obj.weight}
+							height={obj.height}
+							position={obj.play_position}
 						/>
 					);
 				})}
@@ -26,7 +33,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 		alignItems: "center",
 	},
-    scrollViewStyle: {
-        marginTop: 10
-    }
+	scrollViewStyle: {
+		marginVertical: 10,
+	},
 });
