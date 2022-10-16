@@ -246,7 +246,7 @@ def get_rows(plays, previous_yard_line, play_counter):
 def get_name(number):
   try:
     r = requests.get(f"https://data.mongodb-api.com/app/data-ahunl/endpoint/get_player_name?jersey={number}")
-    return r.json()['Name']
+    return r.json()['name']
   except:
     return number
 
