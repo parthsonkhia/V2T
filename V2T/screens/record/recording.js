@@ -9,6 +9,7 @@ import {
 	TouchableWithoutFeedback,
 	Keyboard,
 	ActivityIndicator,
+	Button,
 } from "react-native";
 import { Audio } from "expo-av";
 import axios from "axios";
@@ -22,11 +23,17 @@ const Recording = () => {
 	const [currentTranscript, setCurrentTranscript] = useState("");
 	const [previousRecordings, setPreviousRecordings] = useState([]);
 	const [isEditable, setIsEditable] = useState(false);
+	const [showHistory, setShowHistory] = useState(false);
+	const [showTranscript, setShowTranscript] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const baseURL = "http://3.139.78.213";
 
 	const startRecording = async () => {
 		try {
+			if (mostRecentRecording) {
+				saveCurrentRecording();
+			}
+			setShowHistory(false);
 			setIsEditable(false);
 			const permission = await Audio.requestPermissionsAsync();
 			if (permission.status === "granted") {
@@ -114,12 +121,14 @@ const Recording = () => {
 			});
 	};
 
-	const handleDelete = () => {
-		let updatedPreviousRecordings = [...previousRecordings];
-		updatedPreviousRecordings.pop();
-		setRecordings(updatedPreviousRecordings);
-		setMessage("Record a new audio");
-		isEditable(false);
+	const handleDelete = (index) => {
+		let updatedPreviousRecordings = previousRecordings.filter(
+			(rcd, i) => i != index
+		);
+		setMostRecentRecording(undefined);
+		setPreviousRecordings(updatedPreviousRecordings);
+		setCurrentTranscript("Record a new audio");
+		setIsEditable(false);
 		setLoading(false);
 	};
 
@@ -151,14 +160,69 @@ const Recording = () => {
 									<Feather name="play" size={24} color="black" />
 								</TouchableOpacity>
 								<TouchableOpacity
-									onPress={() => handleDelete()}
+									onPress={() => handleDelete(-1)}
 									style={styles.button}
 								>
 									<AntDesign name="delete" size={24} color="black" />
 								</TouchableOpacity>
 							</View>
 						</View>
-					) : null}
+					) : (
+						<View>
+							<Button
+								title={!showHistory ? "Show history" : "Hide History"}
+								onPress={() => setShowHistory(!showHistory)}
+							/>
+							{showHistory ? (
+								<View>
+									{previousRecordings.map((recording, index) => {
+										return (
+											<View>
+												<View style={styles.recordingBoxContainer} key={index}>
+													<Text style={styles.recordingNameText}>
+														Recording {index + 1} - {recording.duration}
+													</Text>
+													<View style={styles.recordingButtonContainer}>
+														<TouchableOpacity
+															onPress={() => recording.sound.replayAsync()}
+															style={styles.button}
+														>
+															<Feather name="play" size={24} color="black" />
+														</TouchableOpacity>
+														<TouchableOpacity
+															onPress={() => handleDelete(index)}
+															style={styles.button}
+														>
+															<AntDesign
+																name="delete"
+																size={24}
+																color="black"
+															/>
+														</TouchableOpacity>
+														<TouchableOpacity
+															onPress={() => setShowTranscript(!showTranscript)}
+															style={styles.button}
+														>
+															<MaterialIcons
+																name="translate"
+																size={24}
+																color="black"
+															/>
+														</TouchableOpacity>
+													</View>
+												</View>
+												{showTranscript ? (
+													<View>
+														<Text>{recording.transcript}</Text>
+													</View>
+												) : null}
+											</View>
+										);
+									})}
+								</View>
+							) : null}
+						</View>
+					)}
 					<View style={styles.translatedTextBox}>
 						{!loading ? (
 							<TextInput

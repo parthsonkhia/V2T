@@ -1,12 +1,13 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Record from "../screens/record/record";
+import History from "../screens/history/history";
 import Roster from "../screens/roster/roster";
 import Profile from "../screens/profile/profile";
 import { Feather } from "@expo/vector-icons";
 import { Text } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import Recording from "../screens/record/recording";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
 
