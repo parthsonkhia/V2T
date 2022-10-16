@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Login from "./screens/login/login";
 import Register from "./screens/register/register";
@@ -18,7 +18,9 @@ export default function App() {
 				{!loggedIn ? (
 					<Stack.Navigator>
 						<Stack.Screen name="Register" component={Register} />
-						<Stack.Screen name="Login" component={Login} initialParams={{ setLoggedIn: setLoggedIn }}/>
+						<Stack.Screen name="Login">
+							{(props) => <Login {...props} setLoggedIn={setLoggedIn} />}
+						</Stack.Screen>
 					</Stack.Navigator>
 				) : (
 					<BottomTab />

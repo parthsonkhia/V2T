@@ -15,14 +15,12 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         justifyContent: 'center',
         alignItems: "center",
-        backgroundColor: "light grey",
         width: "80%",
         height: 50,
         marginVertical: 5,
         borderRadius: 5
     },
     textStyle: {
-        color: "white",
         fontWeight: "bold",
         fontSize: 20,
 	},

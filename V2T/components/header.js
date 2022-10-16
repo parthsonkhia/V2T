@@ -13,7 +13,6 @@ export default function Header(props) {
 const styles = StyleSheet.create({
     container: {
         borderWidth: 1,
-        borderColor: "silver",
         width: "100%",
         height: 50,
         justifyContent: "center",

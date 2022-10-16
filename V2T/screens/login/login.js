@@ -1,29 +1,80 @@
 import React, { useState } from "react";
 import { View, StyleSheet, TextInput, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import SelectDropdown from "react-native-select-dropdown";
 import Button from "../../components/button";
 import Label from "../../components/label";
-import { CommonActions } from "@react-navigation/native";
+import axios from "axios";
 
-const Login = ({ navigation, route }) => {
+const Login = ({ navigation, route, setLoggedIn }) => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [validEmail, setValidEmail] = useState(true);
+	const [validPassword, setValidPassword] = useState(true);
 	const actionLogin = () => {
-		route.params.setLoggedIn(true);
+		const baseURL =
+			"https://data.mongodb-api.com/app/data-ahunl/endpoint/users";
+		axios({
+			method: "post",
+			url: baseURL,
+			headers: {
+				"Content-Type": "application/json",
+			},
+		})
+			.then((response) => {
+				// console.log(response.data);
+				setLoggedIn(true);
+			})
+			.catch((err) => {
+				console.error(err);
+			});
+	};
+
+	const validation = () => {
+		const emailregex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+		let valid = true;
+		// email check
+		if (email == "") {
+			setValidEmail(false);
+			valid = false;
+		} else if (!emailregex.test(email)) {
+			setValidEmail(false);
+			valid = false;
+		} else {
+			setValidEmail(true);
+		}
+		// password check
+		if (password == "" || password.length < 6) {
+			setValidPassword(false);
+			valid = false;
+			setPassword("");
+		} else {
+			setValidPassword(true);
+		}
+		if (valid) {
+			actionLogin();
+		}
 	};
 
 	return (
 		<View style={styles.container}>
 			<Label text="Email" />
 			<TextInput
-				style={styles.textBoxStyle}
+				style={
+					validEmail
+						? styles.textBoxStyle
+						: [styles.textBoxStyle, { borderColor: "red" }]
+				}
 				onChangeText={setEmail}
 				value={email}
 			/>
 			<Label text="Password" />
 			<TextInput
-				style={styles.textBoxStyle}
+				secureTextEntry={true}
+				style={
+					validPassword
+						? styles.textBoxStyle
+						: [styles.textBoxStyle, { borderColor: "red" }]
+				}
 				onChangeText={setPassword}
 				value={password}
 			/>
@@ -34,13 +85,10 @@ const Login = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: "#999999",
 		flex: 1,
 		alignItems: "center",
-		borderWidth: 1,
 	},
 	textStyle: {
-		color: "white",
 		fontWeight: "bold",
 		fontSize: 20,
 	},
@@ -64,7 +112,6 @@ const styles = StyleSheet.create({
 		width: "80%",
 		borderRadius: 10,
 		paddingHorizontal: 10,
-		backgroundColor: "grey",
 	},
 });
 

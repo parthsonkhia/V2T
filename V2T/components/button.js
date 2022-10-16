@@ -12,17 +12,14 @@ const Button = (props) => {
 const styles = StyleSheet.create({
     container: {
         borderWidth: 2,
-        borderColor: "white",
         justifyContent: 'center',
         alignItems: "center",
-        backgroundColor: "light grey",
         width: "50%",
         height: 50,
         marginVertical: 10,
         borderRadius: 15
     },
     textStyle: {
-        color: "white",
         fontWeight: "bold",
         fontSize: 20,
 	},

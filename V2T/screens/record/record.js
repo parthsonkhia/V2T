@@ -8,7 +8,7 @@ import {
 	TextInput,
 	TouchableWithoutFeedback,
 	Keyboard,
-	Button,
+	ActivityIndicator,
 } from "react-native";
 import { Audio } from "expo-av";
 import Recording from "../../components/recording";
@@ -16,14 +16,16 @@ import axios from "axios";
 import { AntDesign } from "@expo/vector-icons";
 // import Button from "../../components/button";
 import { Feather } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function Record() {
-	const [recording, setRecording] = React.useState();
-	const [recordings, setRecordings] = React.useState([]);
+	const [recording, setRecording] = useState();
+	const [recordings, setRecordings] = useState([]);
 	const [message, setMessage] = useState("Record your first audio");
 	const [active, setActive] = useState(false);
 	const [loading, setLoading] = useState(false);
-	const baseURL = "http://18.218.107.255";
+	const [savedTranscript, setSavedTranscript] = useState(false);
+	const baseURL = "http://3.139.78.213";
 	const handleDelete = (ind) => {
 		setRecordings(recordings.filter((rcrd, i) => i != ind));
 		setMessage("Record your first audio");
@@ -106,6 +108,10 @@ export default function Record() {
 		setRecording(undefined);
 		setLoading(true);
 		await recording.stopAndUnloadAsync();
+		await Audio.setAudioModeAsync({
+			allowsRecordingIOS: false,
+			playsInSilentModeIOS: true,
+		});
 
 		// let updatedRecordings = [...recordings];
 		let updatedRecordings = [];
@@ -114,8 +120,8 @@ export default function Record() {
 			sound: sound,
 			duration: getDurationFormatted(status.durationMillis),
 			file: recording.getURI(),
+			transcript: "",
 		};
-
 		updatedRecordings.push(newRecordingObject);
 		setRecordings(updatedRecordings);
 
@@ -141,6 +147,7 @@ export default function Record() {
 			.then((response) => {
 				if (response.data.result.text.length > 0) {
 					setMessage(response.data.result.text);
+					console.log("here", recordings);
 					setActive(true);
 					setLoading(false);
 				} else {
@@ -148,7 +155,7 @@ export default function Record() {
 				}
 			})
 			.catch((err) => {
-				console.error(err.response.data);
+				console.error(err);
 			});
 	}
 
@@ -194,7 +201,8 @@ export default function Record() {
 	}
 
 	const saveFinalText = () => {
-		console.log("Okay!");
+		setSavedTranscript(true);
+		setActive(false);
 	};
 
 	return (
@@ -205,21 +213,33 @@ export default function Record() {
 					{recordings.length > 0 ? (
 						<View style={styles.recordingBoxContainer}>
 							<Text style={styles.recordingNameText}>
-								Recording - {recordings[0].duration}
+								Recording - {recordings[recordings.length - 1].duration}
 							</Text>
 							<View style={styles.recordingButtonContainer}>
 								<TouchableOpacity
-									onPress={() => recordings[0].sound.replayAsync()}
+									onPress={() =>
+										recordings[recordings.length - 1].sound.replayAsync()
+									}
 									style={styles.button}
 								>
 									<Feather name="play" size={24} color="black" />
 								</TouchableOpacity>
-								<TouchableOpacity
-									onPress={() => handleDelete(0)}
-									style={styles.button}
-								>
-									<AntDesign name="delete" size={24} color="black" />
-								</TouchableOpacity>
+								{!loading ? (
+									<TouchableOpacity
+										onPress={() => handleDelete(0)}
+										style={styles.button}
+									>
+										<AntDesign name="delete" size={24} color="black" />
+									</TouchableOpacity>
+								) : null}
+								{savedTranscript ? (
+									<TouchableOpacity
+										onPress={() => handleDelete(0)}
+										style={styles.button}
+									>
+										<MaterialIcons name="translate" size={24} color="black" />
+									</TouchableOpacity>
+								) : null}
 								{/* <TouchableOpacity
 								// onPress={() => Sharing.shareAsync(recordings[0].file)}
 								onPress={() => sendAudio(recordings[0])}
@@ -238,9 +258,7 @@ export default function Record() {
 								value={message}
 								multiline={true}
 							/>
-						) : (
-							<Feather name="loader" size={24} color="black" />
-						)}
+						) : null}
 					</View>
 					{active ? (
 						<TouchableOpacity
@@ -253,14 +271,18 @@ export default function Record() {
 				</View>
 				<View style={styles.recordingBox}>
 					<View style={styles.recordingOuterButton}>
-						<TouchableOpacity
-							onPress={recording ? stopAndSendRecording : startRecording}
-							style={
-								recording
-									? styles.recordingStopButton
-									: styles.recordingStartButton
-							}
-						></TouchableOpacity>
+						{!loading ? (
+							<TouchableOpacity
+								onPress={recording ? stopAndSendRecording : startRecording}
+								style={
+									recording
+										? styles.recordingStopButton
+										: styles.recordingStartButton
+								}
+							></TouchableOpacity>
+						) : (
+							<ActivityIndicator size="large" color="#e63946" />
+						)}
 					</View>
 				</View>
 			</View>
@@ -285,7 +307,7 @@ const styles = StyleSheet.create({
 		width: "90%",
 		alignItems: "center",
 		justifyContent: "center",
-		marginBottom: 10,
+		marginBottom: 25,
 	},
 	recordingText: {
 		fontWeight: "bold",
