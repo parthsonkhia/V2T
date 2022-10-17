@@ -1,40 +1,40 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Button } from "react-native";
-import Header from "../../components/header";
-import { SafeAreaView } from "react-native-safe-area-context";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet } from "react-native";
 import PlayerList from "./playerList";
 import axios from "axios";
 
-
 const Roster = () => {
-	const baseURL = "https://data.mongodb-api.com/app/data-ahunl/endpoint";
 	const [data, setData] = useState([]);
+
+	const baseURL = "https://data.mongodb-api.com/app/data-ahunl/endpoint";
 	const arg1 = "DEF";
-	axios({
-		method: "get",
-		url: baseURL + "/roster_details?arg1="+arg1,
-		// headers: {
-		// 	Accept: "application/json",
-		// },
-	})
-		.then((response) => {
-			setData([...response.data]);
+
+	useEffect(() => {
+		axios({
+			method: "get",
+			url: baseURL + "/roster_details?arg1=" + arg1,
 		})
-		.catch((err) => {
-			console.error(err.response.data);
-		});
+			.then((response) => {
+				console.log(1);
+				setData(response.data);
+			})
+			.catch((err) => {
+				console.error(err);
+			});
+	}, []);
+
 	return (
 		<View style={styles.container}>
-			<PlayerList data={data}/>
+			<PlayerList data={data} />
 		</View>
 	);
 };
 
 const styles = StyleSheet.create({
 	container: {
+		width: "100%",
 		height: "100%",
 		alignItems: "center",
-		backgroundColor: "#999999",
 	},
 });
 
