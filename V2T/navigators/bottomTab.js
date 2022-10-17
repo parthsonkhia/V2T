@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Record from "../screens/record/record";
 import Roster from "../screens/roster/roster";
 import Profile from "../screens/profile/profile";
+import Statistics from "../screens/statistics/statistics";
 import { Feather } from "@expo/vector-icons";
 import { Text } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
@@ -51,6 +52,37 @@ export default function BottomTab() {
 								color="#6c757d"
 								style={{ paddingTop: 5 }}
 							/>
+						),
+				}}
+			/>
+			<Tab.Screen
+				name="Statistics"
+				component={Statistics}
+				options={{
+					tabBarLabel: ({ focused }) =>
+						focused ? (
+							<Text
+								style={{
+									fontWeight: "600",
+									color: "black",
+									fontSize: 12,
+									paddingBottom: 5,
+								}}
+							>
+								Statistics
+							</Text>
+						) : (
+							<Text
+								style={{ fontSize: 10, color: "#6c757d", paddingBottom: 5 }}
+							>
+								Statistics
+							</Text>
+						),
+					tabBarIcon: ({ focused }) =>
+						focused ? (
+							<Feather name="users" size={22} color="black" />
+						) : (
+							<Feather name="users" size={20} color="#6c757d" />
 						),
 				}}
 			/>

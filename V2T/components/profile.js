@@ -11,12 +11,18 @@ const Profile = (props) => {
 					<Text style={styles.nameText}>{props.name}</Text>
 				</View>
 				<View style={styles.rightBottomBox}>
-					<View style={[styles.details, { width: "100%" }]}>
+					<View style={[styles.details, { width: "25%" }]}>
 						<Text style={styles.detailsText}>{props.position}</Text>
 					</View>
-					{/* <View style={[styles.details, {width: "30%"}]}>
+					<View style={[styles.details, {width: "25%"}]}>
 						<Text style={styles.detailsText}>{props.age}</Text>
-					</View> */}
+					</View>
+					<View style={[styles.details, {width: "25%"}]}>
+						<Text style={styles.detailsText}>{props.height}</Text>
+					</View>
+					<View style={[styles.details, {width: "25%"}]}>
+						<Text style={styles.detailsText}>{props.weight}lbs</Text>
+					</View>
 				</View>
 			</View>
 		</View>

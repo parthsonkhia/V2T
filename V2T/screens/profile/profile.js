@@ -17,7 +17,7 @@ import axios from "axios";
 
 const Profile = ({ navigation }) => {
 	const [picture, setPicture] = useState("");
-
+	const [data, setData] = useState([]);
 	const handlePress = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
 			mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -38,7 +38,7 @@ const Profile = ({ navigation }) => {
 			url: baseURL,
 		})
 			.then((response) => {
-				console.log(response.data);
+				setData (response.data);
 			})
 			.catch((err) => {
 				console.error(err);
@@ -63,16 +63,16 @@ const Profile = ({ navigation }) => {
 				</TouchableOpacity>
 			</View>
 			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Mihir Bhansali</Text>
+				<Text style={styles.textStyle}>{data.Name}</Text>
 			</View>
 			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>mihirvin@buffalo.edu</Text>
+				<Text style={styles.textStyle}>{data.Email}</Text>
 			</View>
 			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>716-907-8663</Text>
+				<Text style={styles.textStyle}>{data.Phone}</Text>
 			</View>
 			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Defense Coach</Text>
+				<Text style={styles.textStyle}>{data.Role} Coach</Text>
 			</View>
 		</View>
 	);

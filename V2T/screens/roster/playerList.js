@@ -10,9 +10,11 @@ export default function PlayerList(props) {
 					return (
 						<Profile
 							key={i}
-							name={obj.name}
-							position={obj.position}
-							age={obj.age}
+							name={obj.Name}
+							position={obj.Position}
+							age={obj.Age}
+							height={obj.Height}
+							weight={obj.Weight}
 						/>
 					);
 				})}
