@@ -1,16 +1,18 @@
 import React from "react";
+import { Text } from "react-native";
+
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
+import { Feather } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+
+import Recording from "../screens/record/recording";
 import Roster from "../screens/roster/roster";
 import Profile from "../screens/profile/profile";
-import { Feather } from "@expo/vector-icons";
-import { Text } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
-import Recording from "../screens/record/recording";
-import { MaterialIcons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
 
-export default function BottomTab() {
+export default function BottomTab(props) {
 	return (
 		<Tab.Navigator>
 			<Tab.Screen
@@ -87,7 +89,7 @@ export default function BottomTab() {
 			/>
 			<Tab.Screen
 				name="Profile"
-				component={Profile}
+				children={() => <Profile loggedIn={props.loggedIn} />}
 				options={{
 					tabBarLabel: ({ focused }) =>
 						focused ? (
