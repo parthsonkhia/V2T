@@ -39,69 +39,6 @@ const Statistics = ({ navigation }) => {
 	if (!isLoading){
 	return (
 		<ScrollView showsVerticalScrollIndicator={false}>
-			{/* <View style={styles.container}> */}
-			{/* <View style={styles.header}>
-				<TouchableOpacity
-					style={styles.avatarPlaceholder}
-					onPress={() => handlePress()}
-				>
-					{picture === "" ? (
-						<Image
-							source={require("../../assets/profile.png")}
-							style={{ height: 150, width: 150, borderRadius: 75 }}
-						></Image>
-					) : (
-						<Image source={{ uri: picture }} style={styles.avatar} />
-					)}
-				</TouchableOpacity>
-			</View> */}
-			{/* <View style={styles.textContainer}>
-				<Text style={styles.textStyle}>First Down Efficiency :- {stat_data[0].result.statistics.first_down_efficiency}</Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Second Down Efficiency :- {stat_data[0].result.statistics.second_down_efficiency}</Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Third Down Efficiency :- {stat_data[0].result.statistics.third_down_efficiency}</Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Fourth Down Efficiency :- {stat_data[0].result.statistics.fourth_down_efficiency} </Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Total Punts :- {stat_data[0].result.statistics.n_punts} </Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Total Touchdowns :- {stat_data[0].result.statistics.n_touchdowns} </Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Total Passing Yards :- {stat_data[0].result.statistics.passing_yards} </Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Total Rushing Yards :- {stat_data[0].result.statistics.rushing_yards} </Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Total First Downs :- {stat_data[0].result.statistics.total_first_down} </Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Total Second Downs :- {stat_data[0].result.statistics.total_second_down} </Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Total Third Downs :- {stat_data[0].result.statistics.total_third_down} </Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Total Fourth Downs :- {stat_data[0].result.statistics.total_fourth_down} </Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Total Plays :- {stat_data[0].result.statistics.total_plays} </Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Total Yards :- {stat_data[0].result.statistics.total_yards} </Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.textStyle}>Yards per Play :- {stat_data[0].result.statistics.yards_per_play} </Text>
-			</View> */}
-			{/* </View> */}
-
 			<View style={styles.container}>
 				<View style={styles.label}>
 					<Text style={styles.labelText}>First Down Efficiency</Text>
@@ -115,7 +52,7 @@ const Statistics = ({ navigation }) => {
 					<Text style={styles.labelText}>Second Down Efficiency</Text>
 				</View>
 				<View style={styles.value}>
-					<Text style={styles.detailsText}>{stat_data[0].result.statistics.second_down_efficiency}</Text>
+					<Text style={styles.detailsText}>{stat_data[0].result.statistics.second_down_efficiency.toFixed(2)}</Text>
 				</View>
 			</View>
 			<View style={styles.container}>
