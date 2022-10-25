@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const Label = (props) => {
+const Box = (props) => {
+    
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, {marginTop: props.marginTop}]}>
             <Text style={styles.textStyle}>{props.text}</Text>
         </View>
     )
@@ -11,19 +12,18 @@ const Label = (props) => {
 
 const styles = StyleSheet.create({
     container: {
+        borderWidth: 1,
         justifyContent: 'center',
         alignItems: "center",
-        backgroundColor: "light grey",
-        height: 30,
-        marginVertical: 10,
-        alignSelf: "flex-start",
-        marginLeft: "15%"
+        width: "80%",
+        height: 50,
+        marginVertical: 5,
+        borderRadius: 5
     },
     textStyle: {
-        color: "white",
         fontWeight: "bold",
         fontSize: 20,
 	},
 })
 
-export default Label
+export default Box

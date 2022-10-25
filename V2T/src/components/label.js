@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const Box = (props) => {
+const Label = (props) => {
     return (
-        <View style={[styles.container, {marginTop: props.marginTop}]}>
+        <View style={styles.container}>
             <Text style={styles.textStyle}>{props.text}</Text>
         </View>
     )
@@ -11,20 +11,17 @@ const Box = (props) => {
 
 const styles = StyleSheet.create({
     container: {
-        borderWidth: 2,
-        borderColor: "white",
         justifyContent: 'center',
         alignItems: "center",
-        backgroundColor: "light grey",
-        width: "70%",
-        height: 70,
-        marginVertical: 10
+        height: 30,
+        marginTop: 15,
+        alignSelf: "flex-start",
+        marginLeft: "10%",
     },
     textStyle: {
-        color: "white",
         fontWeight: "bold",
-        fontSize: 20,
+        fontSize: 17
 	},
 })
 
-export default Box
+export default Label
