@@ -3,8 +3,10 @@ import { View, StyleSheet, TouchableOpacity, Text, Image } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
+import Button from "../../components/button";
 
-const Profile = ({ navigation, loggedIn }) => {
+const Profile = ({ navigation, loggedIn, setLoggedIn }) => {
+	console.log("Check: ", loggedIn);
 	const [picture, setPicture] = useState("");
 	const roles = ["Offense Coach", "Defense Coach", "Head Coach", "Other"];
 	const [role, setRole] = useState("");
@@ -37,6 +39,10 @@ const Profile = ({ navigation, loggedIn }) => {
 			});
 	}, []);
 
+	const handleSignOut = () => {
+		setLoggedIn(false);
+	};
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.header}>
@@ -60,7 +66,7 @@ const Profile = ({ navigation, loggedIn }) => {
 			</View>
 			<View style={styles.textContainer}>
 				<Text style={styles.fieldNameStyle}>Email: </Text>
-				<Text style={styles.userDataStyle}></Text>
+				<Text style={styles.userDataStyle}>{loggedIn ? "Yes" : "No"}</Text>
 			</View>
 			<View style={styles.textContainer}>
 				<Text style={styles.fieldNameStyle}>Phone: </Text>
@@ -93,6 +99,19 @@ const Profile = ({ navigation, loggedIn }) => {
 					dropdownStyle={styles.selectionDropdown}
 				/>
 			</View> */}
+			<View style={styles.signOutButton}>
+				<Button
+					text="Log Out"
+					marginTop={10}
+					onButtonPress={handleSignOut}
+					textStyle={{ color: "#FFF" }}
+					buttonStyle={{
+						backgroundColor: "#6096ba",
+						borderWidth: 0,
+						marginTop: 50,
+					}}
+				/>
+			</View>
 		</View>
 	);
 };
@@ -167,6 +186,10 @@ const styles = StyleSheet.create({
 		fontWeight: "600",
 		fontSize: 16,
 		paddingRight: 25,
+	},
+	signOutButton: {
+		justifyContent: "center",
+		alignItems: "center",
 	},
 });
 

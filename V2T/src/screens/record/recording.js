@@ -276,7 +276,7 @@ const Recording = () => {
 								}
 							></TouchableOpacity>
 						) : (
-							<ActivityIndicator size="large" color="#e63946" />
+							<ActivityIndicator size="large" color="#ff5a5f" />
 						)}
 					</View>
 				</View>
@@ -309,22 +309,22 @@ const styles = StyleSheet.create({
 		fontSize: 17,
 	},
 	recorderStartButton: {
-		height: 60,
-		width: 60,
+		height: 67,
+		width: 67,
 		borderRadius: 40,
-		backgroundColor: "#d90429",
+		backgroundColor: "#ff5a5f",
 	},
 	recorderStopButton: {
-		height: 40,
-		width: 40,
+		height: 47,
+		width: 47,
 		borderRadius: 10,
-		backgroundColor: "#e63946",
+		backgroundColor: "#ff5a5f",
 	},
 	recorderOuterRing: {
 		alignItems: "center",
 		justifyContent: "center",
-		height: 70,
-		width: 70,
+		height: 80,
+		width: 80,
 		borderWidth: 3,
 		borderRadius: 40,
 	},

@@ -148,8 +148,19 @@ const Register = ({ navigation, route, setLoggedIn }) => {
 				) : (
 					<Text style={{ color: "red" }}>Please select a role</Text>
 				)}
-				<Button text="Register" marginTop={60} onButtonPress={validation} />
-				<Button text="Log In" marginTop={10} onButtonPress={actionSkip} />
+				<Button
+					text="GO"
+					marginTop={60}
+					onButtonPress={validation}
+					buttonStyle={{ width: "60%" }}
+				/>
+				<Button
+					text="Log In"
+					marginTop={10}
+					onButtonPress={actionSkip}
+					textStyle={{ color: "#FFF" }}
+					buttonStyle={{ backgroundColor: "#6096ba", borderWidth: 0 }}
+				/>
 			</View>
 		</TouchableWithoutFeedback>
 	);
@@ -159,6 +170,7 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		alignItems: "center",
+		backgroundColor: "#FFFFFF",
 	},
 	textStyle: {
 		fontWeight: "bold",

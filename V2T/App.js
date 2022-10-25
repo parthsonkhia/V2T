@@ -17,15 +17,35 @@ export default function App() {
 			<NavigationContainer>
 				{!loggedIn ? (
 					<Stack.Navigator>
-						<Stack.Screen name="Register">
+						<Stack.Screen
+							name="Sign Up"
+							options={{
+								headerStyle: { backgroundColor: "#6096ba" },
+								headerTintColor: "#FFF",
+								headerTitleStyle: {
+									fontWeight: "600",
+									fontSize: 18,
+								},
+							}}
+						>
 							{(props) => <Register {...props} setLoggedIn={setLoggedIn} />}
 						</Stack.Screen>
-						<Stack.Screen name="Login">
+						<Stack.Screen
+							name="Login"
+							options={{
+								headerStyle: { backgroundColor: "#6096ba" },
+								headerTintColor: "#FFF",
+								headerTitleStyle: {
+									fontWeight: "600",
+									fontSize: 18,
+								},
+							}}
+						>
 							{(props) => <Login {...props} setLoggedIn={setLoggedIn} />}
 						</Stack.Screen>
 					</Stack.Navigator>
 				) : (
-					<BottomTab loggedIn={loggedIn} />
+					<BottomTab loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
 				)}
 			</NavigationContainer>
 		</SafeAreaProvider>

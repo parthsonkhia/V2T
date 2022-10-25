@@ -1,6 +1,12 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TextInput, Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+	View,
+	StyleSheet,
+	TextInput,
+	Text,
+	TouchableWithoutFeedback,
+	Keyboard,
+} from "react-native";
 import Button from "../../components/button";
 import Label from "../../components/label";
 import axios from "axios";
@@ -56,30 +62,42 @@ const Login = ({ navigation, route, setLoggedIn }) => {
 	};
 
 	return (
-		<View style={styles.container}>
-			<Label text="Email" />
-			<TextInput
-				style={
-					validEmail
-						? styles.textBoxStyle
-						: [styles.textBoxStyle, { borderColor: "red" }]
-				}
-				onChangeText={setEmail}
-				value={email}
-			/>
-			<Label text="Password" />
-			<TextInput
-				secureTextEntry={true}
-				style={
-					validPassword
-						? styles.textBoxStyle
-						: [styles.textBoxStyle, { borderColor: "red" }]
-				}
-				onChangeText={setPassword}
-				value={password}
-			/>
-			<Button text="Login" marginTop={80} onButtonPress={actionLogin} />
-		</View>
+		<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+			<View style={styles.container}>
+				<Label text="Email" />
+				<TextInput
+					style={
+						validEmail
+							? styles.textBoxStyle
+							: [styles.textBoxStyle, { borderColor: "red" }]
+					}
+					onChangeText={setEmail}
+					value={email}
+				/>
+				<Label text="Password" />
+				<TextInput
+					secureTextEntry={true}
+					style={
+						validPassword
+							? styles.textBoxStyle
+							: [styles.textBoxStyle, { borderColor: "red" }]
+					}
+					onChangeText={setPassword}
+					value={password}
+				/>
+				<Button
+					text="GO"
+					marginTop={80}
+					onButtonPress={actionLogin}
+					textStyle={{ color: "#FFF" }}
+					buttonStyle={{
+						backgroundColor: "#6096ba",
+						borderWidth: 0,
+						width: "60%",
+					}}
+				/>
+			</View>
+		</TouchableWithoutFeedback>
 	);
 };
 
