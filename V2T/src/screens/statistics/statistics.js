@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text, ScrollView } from "react-native";
+import {
+	View,
+	StyleSheet,
+	Text,
+	ScrollView,
+	ActivityIndicator,
+} from "react-native";
 import axios from "axios";
 
 const Statistics = () => {
-	const [isLoading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(true);
 	const [stat_data, setData] = useState([]);
 
 	useEffect(() => {
+		console.log("here");
 		const baseURL = "http://3.138.157.115/report?play=1";
 		axios({
 			method: "get",
@@ -21,200 +28,200 @@ const Statistics = () => {
 			});
 	}, []);
 
-	if (!isLoading) {
-		return (
-			<ScrollView showsVerticalScrollIndicator={false}>
-				<View style={styles.container}>
-					<View style={styles.label}>
-						<Text style={styles.labelText}>First Down Efficiency</Text>
+	return (
+		<View style={styles.parentContainer}>
+			{!loading ? (
+				<ScrollView showsVerticalScrollIndicator={false}>
+					<View style={styles.container}>
+						<View style={styles.label}>
+							<Text style={styles.labelText}>First Down Efficiency</Text>
+						</View>
+						<View style={styles.value}>
+							<Text style={styles.detailsText}>
+								{stat_data[0].result.statistics.first_down_efficiency}
+							</Text>
+						</View>
 					</View>
-					<View style={styles.value}>
-						<Text style={styles.detailsText}>
-							{stat_data[0].result.statistics.first_down_efficiency}
-						</Text>
+					<View style={styles.container}>
+						<View style={styles.label}>
+							<Text style={styles.labelText}>Second Down Efficiency</Text>
+						</View>
+						<View style={styles.value}>
+							<Text style={styles.detailsText}>
+								{stat_data[0].result.statistics.second_down_efficiency.toFixed(
+									2
+								)}
+							</Text>
+						</View>
 					</View>
-				</View>
-				<View style={styles.container}>
-					<View style={styles.label}>
-						<Text style={styles.labelText}>Second Down Efficiency</Text>
+					<View style={styles.container}>
+						<View style={styles.label}>
+							<Text style={styles.labelText}>Third Down Efficiency</Text>
+						</View>
+						<View style={styles.value}>
+							<Text style={styles.detailsText}>
+								{stat_data[0].result.statistics.third_down_efficiency}
+							</Text>
+						</View>
 					</View>
-					<View style={styles.value}>
-						<Text style={styles.detailsText}>
-							{stat_data[0].result.statistics.second_down_efficiency.toFixed(2)}
-						</Text>
+					<View style={styles.container}>
+						<View style={styles.label}>
+							<Text style={styles.labelText}>Fourth Down Efficiency</Text>
+						</View>
+						<View style={styles.value}>
+							<Text style={styles.detailsText}>
+								{stat_data[0].result.statistics.fourth_down_efficiency}
+							</Text>
+						</View>
 					</View>
-				</View>
-				<View style={styles.container}>
-					<View style={styles.label}>
-						<Text style={styles.labelText}>Third Down Efficiency</Text>
+					<View style={styles.container}>
+						<View style={styles.label}>
+							<Text style={styles.labelText}>Total Punts</Text>
+						</View>
+						<View style={styles.value}>
+							<Text style={styles.detailsText}>
+								{stat_data[0].result.statistics.n_punts}
+							</Text>
+						</View>
 					</View>
-					<View style={styles.value}>
-						<Text style={styles.detailsText}>
-							{stat_data[0].result.statistics.third_down_efficiency}
-						</Text>
+					<View style={styles.container}>
+						<View style={styles.label}>
+							<Text style={styles.labelText}>Total Touchdowns</Text>
+						</View>
+						<View style={styles.value}>
+							<Text style={styles.detailsText}>
+								{stat_data[0].result.statistics.n_touchdowns}
+							</Text>
+						</View>
 					</View>
-				</View>
-				<View style={styles.container}>
-					<View style={styles.label}>
-						<Text style={styles.labelText}>Fourth Down Efficiency</Text>
+					<View style={styles.container}>
+						<View style={styles.label}>
+							<Text style={styles.labelText}>Total Passing Yards</Text>
+						</View>
+						<View style={styles.value}>
+							<Text style={styles.detailsText}>
+								{stat_data[0].result.statistics.passing_yards}
+							</Text>
+						</View>
 					</View>
-					<View style={styles.value}>
-						<Text style={styles.detailsText}>
-							{stat_data[0].result.statistics.fourth_down_efficiency}
-						</Text>
+					<View style={styles.container}>
+						<View style={styles.label}>
+							<Text style={styles.labelText}>Total Rushing Yards</Text>
+						</View>
+						<View style={styles.value}>
+							<Text style={styles.detailsText}>
+								{stat_data[0].result.statistics.rushing_yards}
+							</Text>
+						</View>
 					</View>
-				</View>
-				<View style={styles.container}>
-					<View style={styles.label}>
-						<Text style={styles.labelText}>Total Punts</Text>
+					<View style={styles.container}>
+						<View style={styles.label}>
+							<Text style={styles.labelText}>Total First Downs</Text>
+						</View>
+						<View style={styles.value}>
+							<Text style={styles.detailsText}>
+								{stat_data[0].result.statistics.total_first_down}
+							</Text>
+						</View>
 					</View>
-					<View style={styles.value}>
-						<Text style={styles.detailsText}>
-							{stat_data[0].result.statistics.n_punts}
-						</Text>
+					<View style={styles.container}>
+						<View style={styles.label}>
+							<Text style={styles.labelText}>Total Second Downs</Text>
+						</View>
+						<View style={styles.value}>
+							<Text style={styles.detailsText}>
+								{stat_data[0].result.statistics.total_second_down}
+							</Text>
+						</View>
 					</View>
-				</View>
-				<View style={styles.container}>
-					<View style={styles.label}>
-						<Text style={styles.labelText}>Total Touchdowns</Text>
+					<View style={styles.container}>
+						<View style={styles.label}>
+							<Text style={styles.labelText}>Total Third Downs</Text>
+						</View>
+						<View style={styles.value}>
+							<Text style={styles.detailsText}>
+								{stat_data[0].result.statistics.total_third_down}
+							</Text>
+						</View>
 					</View>
-					<View style={styles.value}>
-						<Text style={styles.detailsText}>
-							{stat_data[0].result.statistics.n_touchdowns}
-						</Text>
+					<View style={styles.container}>
+						<View style={styles.label}>
+							<Text style={styles.labelText}>Total Fourth Downs</Text>
+						</View>
+						<View style={styles.value}>
+							<Text style={styles.detailsText}>
+								{stat_data[0].result.statistics.total_fourth_down}
+							</Text>
+						</View>
 					</View>
-				</View>
-				<View style={styles.container}>
-					<View style={styles.label}>
-						<Text style={styles.labelText}>Total Passing Yards</Text>
+					<View style={styles.container}>
+						<View style={styles.label}>
+							<Text style={styles.labelText}>Total Plays</Text>
+						</View>
+						<View style={styles.value}>
+							<Text style={styles.detailsText}>
+								{stat_data[0].result.statistics.total_plays}
+							</Text>
+						</View>
 					</View>
-					<View style={styles.value}>
-						<Text style={styles.detailsText}>
-							{stat_data[0].result.statistics.passing_yards}
-						</Text>
+					<View style={styles.container}>
+						<View style={styles.label}>
+							<Text style={styles.labelText}>Total Yards</Text>
+						</View>
+						<View style={styles.value}>
+							<Text style={styles.detailsText}>
+								{stat_data[0].result.statistics.total_yards}
+							</Text>
+						</View>
 					</View>
-				</View>
-				<View style={styles.container}>
-					<View style={styles.label}>
-						<Text style={styles.labelText}>Total Rushing Yards</Text>
+					<View style={[styles.container, { marginBottom: 10 }]}>
+						<View style={styles.label}>
+							<Text style={styles.labelText}>Yards per Play</Text>
+						</View>
+						<View style={styles.value}>
+							<Text style={styles.detailsText}>
+								{stat_data[0].result.statistics.yards_per_play}
+							</Text>
+						</View>
 					</View>
-					<View style={styles.value}>
-						<Text style={styles.detailsText}>
-							{stat_data[0].result.statistics.rushing_yards}
-						</Text>
-					</View>
-				</View>
-				<View style={styles.container}>
-					<View style={styles.label}>
-						<Text style={styles.labelText}>Total First Downs</Text>
-					</View>
-					<View style={styles.value}>
-						<Text style={styles.detailsText}>
-							{stat_data[0].result.statistics.total_first_down}
-						</Text>
-					</View>
-				</View>
-				<View style={styles.container}>
-					<View style={styles.label}>
-						<Text style={styles.labelText}>Total Second Downs</Text>
-					</View>
-					<View style={styles.value}>
-						<Text style={styles.detailsText}>
-							{stat_data[0].result.statistics.total_second_down}
-						</Text>
-					</View>
-				</View>
-				<View style={styles.container}>
-					<View style={styles.label}>
-						<Text style={styles.labelText}>Total Third Downs</Text>
-					</View>
-					<View style={styles.value}>
-						<Text style={styles.detailsText}>
-							{stat_data[0].result.statistics.total_third_down}
-						</Text>
-					</View>
-				</View>
-				<View style={styles.container}>
-					<View style={styles.label}>
-						<Text style={styles.labelText}>Total Fourth Downs</Text>
-					</View>
-					<View style={styles.value}>
-						<Text style={styles.detailsText}>
-							{stat_data[0].result.statistics.total_fourth_down}
-						</Text>
-					</View>
-				</View>
-				<View style={styles.container}>
-					<View style={styles.label}>
-						<Text style={styles.labelText}>Total Plays</Text>
-					</View>
-					<View style={styles.value}>
-						<Text style={styles.detailsText}>
-							{stat_data[0].result.statistics.total_plays}
-						</Text>
-					</View>
-				</View>
-				<View style={styles.container}>
-					<View style={styles.label}>
-						<Text style={styles.labelText}>Total Yards</Text>
-					</View>
-					<View style={styles.value}>
-						<Text style={styles.detailsText}>
-							{stat_data[0].result.statistics.total_yards}
-						</Text>
-					</View>
-				</View>
-				<View style={styles.container}>
-					<View style={styles.label}>
-						<Text style={styles.labelText}>Yards per Play</Text>
-					</View>
-					<View style={styles.value}>
-						<Text style={styles.detailsText}>
-							{stat_data[0].result.statistics.yards_per_play}
-						</Text>
-					</View>
-				</View>
-			</ScrollView>
-		);
-	}
+				</ScrollView>
+			) : (
+				<ActivityIndicator size="large" color="#6096ba" />
+			)}
+		</View>
+	);
 };
 
 const styles = StyleSheet.create({
 	container: {
-		borderWidth: 0,
-		borderColor: "grey",
-		width: "95%",
 		height: 50,
 		flexDirection: "row",
-		justifyContent: "space-evenly",
-		marginBottom: 1,
-		marginLeft: 10,
+		marginTop: 5,
+		backgroundColor: "#fff",
 	},
 	label: {
-		borderWidth: 0,
-		borderColor: "silver",
-		fontWeight: "bold",
 		justifyContent: "center",
-		width: "50%",
-		height: 50,
-		margin: 10,
-		paddingLeft: "10%",
+		width: "62%",
+		paddingLeft: 20,
 	},
 	value: {
-		borderWidth: 0,
-		width: "50%",
-		height: 50,
-		margin: 10,
+		width: "38%",
 		justifyContent: "center",
 		alignItems: "center",
 	},
 	detailsText: {
-		fontSize: 13,
-		fontWeight: "500",
+		fontSize: 15,
+		fontWeight: "600",
 	},
 	labelText: {
 		fontSize: 15,
-		fontWeight: "bold",
+		fontWeight: "700",
+	},
+	parentContainer: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		backgroundColor: "#6096ba",
 	},
 });
 

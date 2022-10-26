@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ActivityIndicator } from "react-native";
 import PlayerList from "./playerList";
 import axios from "axios";
 
 const Roster = () => {
 	const [data, setData] = useState([]);
+	const [loading, setLoading] = useState(true);
 
 	const baseURL = "https://data.mongodb-api.com/app/data-ahunl/endpoint";
 	const arg1 = "DEF";
@@ -15,8 +16,8 @@ const Roster = () => {
 			url: baseURL + "/roster_details?arg1=" + arg1,
 		})
 			.then((response) => {
-				console.log(1);
 				setData(response.data);
+				setLoading(false);
 			})
 			.catch((err) => {
 				console.error(err);
@@ -25,7 +26,11 @@ const Roster = () => {
 
 	return (
 		<View style={styles.container}>
-			<PlayerList data={data} />
+			{!loading ? (
+				<PlayerList data={data} />
+			) : (
+				<ActivityIndicator size="large" color="#6096ba" />
+			)}
 		</View>
 	);
 };
@@ -35,6 +40,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 		height: "100%",
 		alignItems: "center",
+		justifyContent: "center",
 		backgroundColor: "#fff",
 	},
 });

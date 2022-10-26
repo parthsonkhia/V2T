@@ -6,6 +6,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
 
 import RosterStack from "./rosterStack";
 import ProfileStack from "./profileStack";
@@ -135,11 +136,11 @@ export default function BottomTab(props) {
 					tabBarIcon: ({ focused }) =>
 						focused ? (
 							<View style={styles.iconContainer}>
-								<Feather name="users" size={23} color="white" />
+								<Entypo name="users" size={23} color="white" />
 							</View>
 						) : (
 							<View>
-								<Feather name="users" size={20} color="#edf2fb" />
+								<Entypo name="users" size={20} color="#edf2fb" />
 							</View>
 						),
 				}}

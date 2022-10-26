@@ -1,16 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, TouchableOpacity, Text, Image } from "react-native";
+import {
+	View,
+	StyleSheet,
+	TouchableOpacity,
+	Text,
+	Image,
+	ActivityIndicator,
+} from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import Button from "../../components/button";
 
 const Profile = ({ navigation, loggedIn, setLoggedIn }) => {
-	console.log("Check: ", loggedIn);
 	const [picture, setPicture] = useState("");
+	const [loading, setLoading] = useState(true);
 	const roles = ["Offense Coach", "Defense Coach", "Head Coach", "Other"];
 	const [role, setRole] = useState("");
 	const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+	const [name, setName] = useState("");
+	const [email, setEmail] = useState("");
+	const [phone, setPhone] = useState("");
 
 	const handlePress = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
@@ -32,7 +42,11 @@ const Profile = ({ navigation, loggedIn, setLoggedIn }) => {
 			url: baseURL,
 		})
 			.then((response) => {
-				console.log(response.data);
+				setName(response.data.Name);
+				setEmail(response.data.Email);
+				setPhone(response.data.Phone);
+				setRole(response.data.Role);
+				setLoading(false);
 			})
 			.catch((err) => {
 				console.error(err);
@@ -44,39 +58,41 @@ const Profile = ({ navigation, loggedIn, setLoggedIn }) => {
 	};
 
 	return (
-		<View style={styles.container}>
-			<View style={styles.header}>
-				<TouchableOpacity
-					style={styles.avatarPlaceholder}
-					onPress={() => handlePress()}
-				>
-					{picture === "" ? (
-						<Image
-							source={require("../../../assets/profile.png")}
-							style={{ height: 150, width: 150, borderRadius: 75 }}
-						></Image>
-					) : (
-						<Image source={{ uri: picture }} style={styles.avatar} />
-					)}
-				</TouchableOpacity>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.fieldNameStyle}>Name: </Text>
-				<Text style={styles.userDataStyle}>Mihir Bhansali</Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.fieldNameStyle}>Email: </Text>
-				<Text style={styles.userDataStyle}>{loggedIn ? "Yes" : "No"}</Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.fieldNameStyle}>Phone: </Text>
-				<Text style={styles.userDataStyle}>842849093079</Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Text style={styles.fieldNameStyle}>Role: </Text>
-				<Text style={styles.userDataStyle}>sdkhfjll</Text>
-			</View>
-			{/* <View>
+		<View style={styles.parentContainer}>
+			{!loading ? (
+				<View style={styles.container}>
+					<View style={styles.header}>
+						<TouchableOpacity
+							style={styles.avatarPlaceholder}
+							onPress={() => handlePress()}
+						>
+							{picture === "" ? (
+								<Image
+									source={require("../../../assets/profile.png")}
+									style={{ height: 150, width: 150, borderRadius: 75 }}
+								></Image>
+							) : (
+								<Image source={{ uri: picture }} style={styles.avatar} />
+							)}
+						</TouchableOpacity>
+					</View>
+					<View style={styles.textContainer}>
+						<Text style={styles.fieldNameStyle}>Name: </Text>
+						<Text style={styles.userDataStyle}>{name}</Text>
+					</View>
+					<View style={styles.textContainer}>
+						<Text style={styles.fieldNameStyle}>Email: </Text>
+						<Text style={styles.userDataStyle}>{email}</Text>
+					</View>
+					<View style={styles.textContainer}>
+						<Text style={styles.fieldNameStyle}>Phone: </Text>
+						<Text style={styles.userDataStyle}>{phone}</Text>
+					</View>
+					<View style={styles.textContainer}>
+						<Text style={styles.fieldNameStyle}>Role: </Text>
+						<Text style={styles.userDataStyle}>{role} Coach</Text>
+					</View>
+					{/* <View>
 				<TouchableOpacity>
 					<Text>Edit Profile</Text>
 				</TouchableOpacity>
@@ -99,19 +115,23 @@ const Profile = ({ navigation, loggedIn, setLoggedIn }) => {
 					dropdownStyle={styles.selectionDropdown}
 				/>
 			</View> */}
-			<View style={styles.signOutButton}>
-				<Button
-					text="Log Out"
-					marginTop={10}
-					onButtonPress={handleSignOut}
-					textStyle={{ color: "#FFF" }}
-					buttonStyle={{
-						backgroundColor: "#6096ba",
-						borderWidth: 0,
-						marginTop: 50,
-					}}
-				/>
-			</View>
+					<View style={styles.signOutButton}>
+						<Button
+							text="Log Out"
+							marginTop={10}
+							onButtonPress={handleSignOut}
+							textStyle={{ color: "#FFF" }}
+							buttonStyle={{
+								backgroundColor: "#6096ba",
+								borderWidth: 0,
+								marginTop: 50,
+							}}
+						/>
+					</View>
+				</View>
+			) : (
+				<ActivityIndicator size="large" color="#6096ba" />
+			)}
 		</View>
 	);
 };
@@ -175,10 +195,11 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 10,
 	},
 	fieldNameStyle: {
-		width: "45%",
+		width: "35%",
 		fontWeight: "600",
 		fontSize: 16,
 		color: "gray",
+		paddingVertical: 2,
 		paddingLeft: 25,
 	},
 	userDataStyle: {
@@ -188,6 +209,11 @@ const styles = StyleSheet.create({
 		paddingRight: 25,
 	},
 	signOutButton: {
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	parentContainer: {
+		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
 	},

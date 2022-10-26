@@ -37,26 +37,26 @@ const Login = ({ navigation, route, setLoggedIn }) => {
 
 	const validation = () => {
 		const emailregex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-		let valid = true;
+		let valid = 0;
 		// email check
 		if (email == "") {
 			setValidEmail(false);
-			valid = false;
+			valid -= 1;
 		} else if (!emailregex.test(email)) {
 			setValidEmail(false);
-			valid = false;
+			valid -= 1;
 		} else {
 			setValidEmail(true);
 		}
 		// password check
 		if (password == "" || password.length < 6) {
 			setValidPassword(false);
-			valid = false;
+			valid -= 1;
 			setPassword("");
 		} else {
 			setValidPassword(true);
 		}
-		if (valid) {
+		if (valid === 0) {
 			actionLogin();
 		}
 	};
@@ -88,7 +88,7 @@ const Login = ({ navigation, route, setLoggedIn }) => {
 				<Button
 					text="GO"
 					marginTop={80}
-					onButtonPress={actionLogin}
+					onButtonPress={validation}
 					textStyle={{ color: "#FFF" }}
 					buttonStyle={{
 						backgroundColor: "#6096ba",

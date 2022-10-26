@@ -9,13 +9,14 @@ import {
 	TouchableWithoutFeedback,
 	Keyboard,
 	ActivityIndicator,
-	Button,
+	ScrollView,
 } from "react-native";
 import { Audio } from "expo-av";
 import axios from "axios";
 import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
+import Button from "../../components/button";
 
 const Recording = () => {
 	const [recording, setRecording] = useState();
@@ -156,7 +157,10 @@ const Recording = () => {
 	};
 
 	return (
-		<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+		<TouchableWithoutFeedback
+			onPress={Keyboard.dismiss}
+			disabled={showHistory ? true : false}
+		>
 			<View style={styles.container}>
 				<View style={styles.recordingListBox}>
 					{mostRecentRecording ? (
@@ -169,78 +173,82 @@ const Recording = () => {
 									onPress={() => mostRecentRecording.sound.replayAsync()}
 									style={styles.button}
 								>
-									<Feather name="play" size={24} color="black" />
+									<Feather name="play" size={24} color="green" />
 								</TouchableOpacity>
 								<TouchableOpacity
 									onPress={() => handleDelete(previousRecordings.length - 1)}
 									style={styles.button}
 								>
-									<AntDesign name="delete" size={24} color="black" />
+									<AntDesign name="delete" size={24} color="red" />
 								</TouchableOpacity>
 							</View>
 						</View>
 					) : previousRecordings.length > 0 && !mic ? (
 						<View>
 							<Button
-								title={!showHistory ? "Show history" : "Hide History"}
-								onPress={() => {
+								text={!showHistory ? "Show history" : "Hide History"}
+								onButtonPress={() => {
 									setShowHistory(!showHistory);
 									setShowTranscript(-1);
 								}}
+								buttonStyle={styles.historyButton}
+								textStyle={{ fontSize: 16, fontWeight: "500" }}
 							/>
 							{showHistory ? (
-								<View>
-									{previousRecordings.map((recording, index) => {
-										return (
-											<View key={index}>
-												<View
-													style={[
-														styles.recordingBoxContainer,
-														{ borderBottomWidth: 0 },
-													]}
-												>
-													<Text style={styles.recordingNameText}>
-														Recording {index + 1} - {recording.duration}
-													</Text>
-													<View style={styles.recordingButtonContainer}>
-														<TouchableOpacity
-															onPress={() => recording.sound.replayAsync()}
-															style={styles.button}
-														>
-															<Feather name="play" size={26} color="black" />
-														</TouchableOpacity>
-														<TouchableOpacity
-															onPress={() => handleDelete(index)}
-															style={styles.button}
-														>
-															<AntDesign
-																name="delete"
-																size={26}
-																color="black"
-															/>
-														</TouchableOpacity>
-														<TouchableOpacity
-															onPress={() => handleShowTranscript(index)}
-															style={styles.button}
-														>
-															<MaterialIcons
-																name="translate"
-																size={26}
-																color="black"
-															/>
-														</TouchableOpacity>
-													</View>
-												</View>
-												{showTranscript == index ? (
-													<View style={styles.transcriptBoxStyle}>
-														<Text style={styles.transcriptBoxText}>
-															{recording.transcript}
+								<View style={styles.scrollViewContainer}>
+									<ScrollView showsVerticalScrollIndicator={false}>
+										{previousRecordings.map((recording, index) => {
+											return (
+												<View key={index}>
+													<View
+														style={[
+															styles.recordingBoxContainer,
+															{ borderBottomWidth: 0 },
+														]}
+													>
+														<Text style={styles.recordingNameText}>
+															Recording {index + 1} - {recording.duration}
 														</Text>
+														<View style={styles.recordingButtonContainer}>
+															<TouchableOpacity
+																onPress={() => recording.sound.replayAsync()}
+																style={styles.button}
+															>
+																<Feather name="play" size={26} color="green" />
+															</TouchableOpacity>
+															<TouchableOpacity
+																onPress={() => handleDelete(index)}
+																style={styles.button}
+															>
+																<AntDesign
+																	name="delete"
+																	size={26}
+																	color="red"
+																/>
+															</TouchableOpacity>
+															<TouchableOpacity
+																onPress={() => handleShowTranscript(index)}
+																style={styles.button}
+															>
+																<MaterialIcons
+																	name="translate"
+																	size={26}
+																	color="black"
+																/>
+															</TouchableOpacity>
+														</View>
 													</View>
-												) : null}
-											</View>
-										);
-									})}
+													{showTranscript == index ? (
+														<View style={styles.transcriptBoxStyle}>
+															<Text style={styles.transcriptBoxText}>
+																{recording.transcript}
+															</Text>
+														</View>
+													) : null}
+												</View>
+											);
+										})}
+									</ScrollView>
 								</View>
 							) : null}
 						</View>
@@ -268,6 +276,7 @@ const Recording = () => {
 					<View style={styles.recorderOuterRing}>
 						{!loading ? (
 							<TouchableOpacity
+								activeOpacity={0.8}
 								onPress={recording ? stopRecording : startRecording}
 								style={
 									recording
@@ -293,7 +302,6 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 	},
 	recordingListBox: {
-		// borderWidth: 1,
 		width: "90%",
 		height: "75%",
 		marginTop: 10,
@@ -302,7 +310,8 @@ const styles = StyleSheet.create({
 		width: "90%",
 		alignItems: "center",
 		justifyContent: "center",
-		marginBottom: 25,
+		marginBottom: 20,
+		height: "15%",
 	},
 	recordingText: {
 		fontWeight: "bold",
@@ -329,7 +338,8 @@ const styles = StyleSheet.create({
 		borderRadius: 40,
 	},
 	recordingBoxContainer: {
-		borderBottomWidth: 1,
+		borderBottomWidth: 3,
+		borderColor: "#6096ba",
 		padding: 10,
 		flexDirection: "row",
 		justifyContent: "space-between",
@@ -369,11 +379,23 @@ const styles = StyleSheet.create({
 	transcriptBoxStyle: {
 		padding: 5,
 		justifyContent: "center",
-		borderBottomWidth: 1,
-		borderColor: "silver",
+		borderBottomWidth: 2,
+		borderColor: "#6096ba",
 	},
 	transcriptBoxText: {
 		fontSize: 17,
+		fontWeight: "500",
+	},
+	scrollViewContainer: {
+		height: "95%",
+	},
+	historyButton: {
+		alignSelf: "center",
+		padding: 5,
+		height: 45,
+		width: "100%",
+		borderRadius: 5,
+		borderWidth: 0.5,
 	},
 });
 
