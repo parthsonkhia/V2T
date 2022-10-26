@@ -27,7 +27,7 @@ const Recording = () => {
 	const [showHistory, setShowHistory] = useState(false);
 	const [showTranscript, setShowTranscript] = useState(-1);
 	const [loading, setLoading] = useState(false);
-	const baseURL = "http://3.139.78.213";
+	const baseURL = "http://3.138.157.115";
 
 	const startRecording = async () => {
 		try {

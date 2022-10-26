@@ -9,10 +9,11 @@ const Profile = (props) => {
 			<View style={styles.rightBox}>
 				<View style={styles.upperBox}>
 					<View style={styles.nameBox}>
-						<Text style={styles.nameText}>{props.name}</Text>
-					</View>
-					<View style={styles.ageBox}>
-						<Text style={styles.ageText}>No. {props.jersey}</Text>
+						<Text style={styles.nameText}>
+							{props.jersey}
+							{". "}
+							{props.name}
+						</Text>
 					</View>
 					<View style={styles.ageBox}>
 						<Text style={styles.ageText}>Age: {props.age}</Text>
@@ -38,7 +39,7 @@ const Profile = (props) => {
 
 const styles = StyleSheet.create({
 	container: {
-		borderWidth: 1,
+		// borderWidth: 1,
 		borderColor: "silver",
 		width: "97%",
 		height: 100,
@@ -49,8 +50,9 @@ const styles = StyleSheet.create({
 	},
 	photo: {
 		borderColor: "silver",
-		width: "20%",
-		height: 80,
+		width: "25%",
+		aspectRatio: 1,
+		borderRadius: 50,
 	},
 	rightBox: {
 		width: "70%",
@@ -62,7 +64,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	nameBox: {
-		width: "50%",
+		width: "70%",
 		padding: 5,
 	},
 	ageBox: {
@@ -84,6 +86,7 @@ const styles = StyleSheet.create({
 	},
 	nameText: {
 		fontWeight: "600",
+		fontSize: 16,
 	},
 	ageText: {
 		fontWeight: "600",

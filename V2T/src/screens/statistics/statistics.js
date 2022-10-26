@@ -7,7 +7,7 @@ const Statistics = () => {
 	const [stat_data, setData] = useState([]);
 
 	useEffect(() => {
-		const baseURL = "http://3.139.78.213/report?play=1";
+		const baseURL = "http://3.138.157.115/report?play=1";
 		axios({
 			method: "get",
 			url: baseURL,
