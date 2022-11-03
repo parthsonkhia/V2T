@@ -27,7 +27,7 @@ const Recording = () => {
 	const [showHistory, setShowHistory] = useState(false);
 	const [showTranscript, setShowTranscript] = useState(-1);
 	const [loading, setLoading] = useState(false);
-	const baseURL = "http://3.139.78.213";
+	const baseURL = "http://3.142.243.46";
 
 	const startRecording = async () => {
 		try {
@@ -140,6 +140,25 @@ const Recording = () => {
 		let updatedPreviousRecordings = [...previousRecordings];
 		let lastRecording = updatedPreviousRecordings.pop();
 		lastRecording.transcript = currentTranscript;
+		const params = new URLSearchParams({
+			game: "BUF VS PIT",
+			counter_no: global.counter_no,
+			transcript: currentTranscript,
+		})
+		axios({
+			method: "post",
+			url: "https://data.mongodb-api.com/app/data-ahunl/endpoint/add_transcript?"+params,
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "multipart/form-data",
+			},
+		})
+			.then((response) => {
+				console.log("Transcript Inserted");
+			})
+			.catch((err) => {
+				console.error(err);
+			});
 		updatedPreviousRecordings.push(lastRecording);
 		setPreviousRecordings(updatedPreviousRecordings);
 		setMostRecentRecording(undefined);

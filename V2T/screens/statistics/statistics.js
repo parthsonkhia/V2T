@@ -22,7 +22,7 @@ const Statistics = ({ navigation }) => {
 
 	useEffect(() => {
 		const baseURL =
-			"http://3.139.78.213/report?play=1";
+			"http://3.142.243.46/report?play="+global.counter_no;
 		axios({
 			method: "get",
 			url: baseURL,
@@ -30,6 +30,7 @@ const Statistics = ({ navigation }) => {
 			.then((response) => {
 				setData ([response.data]);
 				setLoading(false);
+				global.counter_no++;
 			})
 			.catch((err) => {
 				console.error(err);

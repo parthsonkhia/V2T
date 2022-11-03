@@ -11,6 +11,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 const Stack = createNativeStackNavigator();
+global.counter_no = 1;
 export default function App() {
 	const [loggedIn, setLoggedIn] = useState(false);
 
