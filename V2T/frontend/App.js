@@ -10,6 +10,7 @@ import Login from "./src/screens/login/login";
 import Register from "./src/screens/register/register";
 
 const Stack = createNativeStackNavigator();
+global.counter_no = 1;
 export default function App() {
 	const [loggedIn, setLoggedIn] = useState(false);
 	useEffect(() => {

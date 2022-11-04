@@ -146,6 +146,28 @@ const Recording = () => {
 		setMostRecentRecording(undefined);
 		setCurrentTranscript("");
 		setIsEditable(false);
+		//
+		const params = new URLSearchParams({
+			game: "BUF VS Opponent",
+			counter_no: global.counter_no,
+			transcript: currentTranscript,
+		});
+		axios({
+			method: "post",
+			url:
+				"https://data.mongodb-api.com/app/data-ahunl/endpoint/add_transcript?" +
+				params,
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "multipart/form-data",
+			},
+		})
+			.then((response) => {
+				console.log("Transcript Inserted");
+			})
+			.catch((err) => {
+				console.error(err);
+			});
 	};
 
 	const handleShowTranscript = (index) => {
