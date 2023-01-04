@@ -11,7 +11,6 @@ import {
 	ActivityIndicator,
 	ScrollView,
 	Image,
-	Modal,
 } from "react-native";
 import { Audio } from "expo-av";
 import axios from "axios";
@@ -19,6 +18,7 @@ import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import Button from "../../components/button";
+import { LongPressGestureHandler, State } from "react-native-gesture-handler";
 
 const Recording = () => {
 	const [recording, setRecording] = useState();
@@ -30,8 +30,6 @@ const Recording = () => {
 	const [showHistory, setShowHistory] = useState(false);
 	const [showTranscript, setShowTranscript] = useState(-1);
 	const [loading, setLoading] = useState(false);
-	const [modalVisible, setModalVisible] = useState(false);
-	const [gameName, setGameName] = useState("");
 	const baseURL = "http://3.143.227.73";
 
 	const startRecording = async () => {
@@ -180,8 +178,12 @@ const Recording = () => {
 		}
 	};
 
-	const handleNewGame = () => {
-		console.log("New Game created!");
+	const onLongPress = (event) => {
+		if (event.nativeEvent.state === State.ACTIVE) {
+			startRecording();
+		} else {
+			stopRecording();
+		}
 	};
 
 	return (
@@ -303,68 +305,31 @@ const Recording = () => {
 				<View style={styles.recorderBox}>
 					<View style={styles.recorderOuterRing}>
 						{!loading ? (
-							<TouchableOpacity
-								activeOpacity={0.8}
-								onPress={recording ? stopRecording : startRecording}
-								style={
-									recording
-										? styles.recorderStopButton
-										: styles.recorderStartButton
-								}
-							></TouchableOpacity>
+							// <TouchableOpacity
+							// 	activeOpacity={0.8}
+							// 	onPress={recording ? stopRecording : startRecording}
+							// style={
+							// 	recording
+							// 		? styles.recorderStopButton
+							// 		: styles.recorderStartButton
+							// }
+							// ></TouchableOpacity>
+							<LongPressGestureHandler onHandlerStateChange={onLongPress}>
+								<View>
+									<View style={recording ? null : styles.recorderStartButton} />
+									{recording ? (
+										<Image
+											source={require("../../../assets/loader.gif")}
+											style={{ height: 140, width: 140, borderRadius: 70 }}
+										/>
+									) : null}
+								</View>
+							</LongPressGestureHandler>
 						) : (
 							<ActivityIndicator size="large" color="#ff5a5f" />
 						)}
 					</View>
 				</View>
-				{previousRecordings.length > 0 && !mic ? (
-					<TouchableOpacity
-						style={styles.newGameBox}
-						activeOpacity={0.7}
-						onPress={() => setModalVisible(true)}
-					>
-						<Text style={styles.newGameText}> New Game </Text>
-					</TouchableOpacity>
-				) : (
-					<View style={styles.newGameDummyBox} />
-				)}
-				<Modal
-					animationType="slide"
-					transparent={true}
-					visible={modalVisible}
-					onRequestClose={() => {
-						Alert.alert("Modal has been closed.");
-						setModalVisible(!modalVisible);
-					}}
-				>
-					<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-						<View style={styles.centeredView}>
-							<View style={styles.modalView}>
-								<Text style={styles.modalText}>
-									Enter the name of the new game you wish to create
-								</Text>
-								<TextInput
-									style={styles.newGameName}
-									onChangeText={setGameName}
-									value={gameName}
-									placeholder="Team 1 vs Team 2"
-								/>
-								<TouchableOpacity
-									style={[styles.button, styles.buttonContinue]}
-									onPress={() => setModalVisible(!modalVisible)}
-								>
-									<Text style={styles.textStyle}>Continue</Text>
-								</TouchableOpacity>
-								<TouchableOpacity
-									style={[styles.button, styles.buttonClose]}
-									onPress={() => setModalVisible(!modalVisible)}
-								>
-									<Text style={styles.textStyle}>Cancel</Text>
-								</TouchableOpacity>
-							</View>
-						</View>
-					</TouchableWithoutFeedback>
-				</Modal>
 			</View>
 		</TouchableWithoutFeedback>
 	);
@@ -386,14 +351,14 @@ const styles = StyleSheet.create({
 	},
 	recordingListBox: {
 		width: "90%",
-		height: "70%",
+		height: "75%",
 		marginTop: 10,
 	},
 	recorderBox: {
 		width: "90%",
 		alignItems: "center",
 		justifyContent: "center",
-		marginBottom: 10,
+		marginBottom: 20,
 		height: "15%",
 	},
 	recordingText: {
@@ -401,24 +366,28 @@ const styles = StyleSheet.create({
 		fontSize: 17,
 	},
 	recorderStartButton: {
-		height: 80,
-		width: 80,
-		borderRadius: 40,
+		height: 100,
+		width: 100,
+		borderRadius: 50,
 		backgroundColor: "#ff5a5f",
 	},
 	recorderStopButton: {
-		height: 55,
-		width: 55,
-		borderRadius: 10,
-		backgroundColor: "#ff5a5f",
+		// height: 47,
+		// width: 47,
+		// borderRadius: 10,
+		// backgroundColor: "#ff5a5f",
+		height: 70,
+		width: 100,
+		borderRadius: 50,
+		backgroundColor: "green",
 	},
 	recorderOuterRing: {
 		alignItems: "center",
 		justifyContent: "center",
-		height: 100,
-		width: 100,
+		height: 120,
+		width: 120,
 		borderWidth: 3,
-		borderRadius: 50,
+		borderRadius: 60,
 	},
 	recordingBoxContainer: {
 		borderBottomWidth: 3,
@@ -479,73 +448,6 @@ const styles = StyleSheet.create({
 		width: "100%",
 		borderRadius: 5,
 		borderWidth: 0.5,
-	},
-	newGameBox: {
-		height: 45,
-		width: 180,
-		justifyContent: "center",
-		alignItems: "center",
-		marginBottom: 20,
-		backgroundColor: "#444",
-	},
-	newGameDummyBox: {
-		height: 45,
-		width: 180,
-		marginBottom: 20,
-	},
-	newGameText: {
-		fontWeight: "700",
-		fontSize: 18,
-		color: "white",
-	},
-	modalView: {
-		margin: 20,
-		backgroundColor: "white",
-		borderRadius: 20,
-		padding: 35,
-		alignItems: "center",
-		shadowColor: "#000",
-		shadowOffset: {
-			width: 0,
-			height: 2,
-		},
-		shadowOpacity: 0.25,
-		shadowRadius: 4,
-		elevation: 5,
-	},
-	centeredView: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
-	},
-	button: {
-		borderRadius: 10,
-		width: 100,
-		height: 35,
-		justifyContent: "center",
-	},
-	buttonContinue: {
-		backgroundColor: "#2196F3",
-	},
-	buttonClose: {
-		marginTop: 10,
-		backgroundColor: "red",
-	},
-	textStyle: {
-		color: "white",
-		fontWeight: "bold",
-		textAlign: "center",
-	},
-	modalText: {
-		marginBottom: 15,
-		textAlign: "center",
-	},
-	newGameName: {
-		borderBottomWidth: 1,
-		marginBottom: 10,
-		paddingHorizontal: 5,
-		paddingVertical: 2,
-		minWidth: 250,
 	},
 });
 

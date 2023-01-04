@@ -13,8 +13,7 @@ const Statistics = () => {
 	const [stat_data, setData] = useState([]);
 
 	useEffect(() => {
-		console.log("here");
-		const baseURL = "http://3.142.243.46/report?play=" + global.counter_no;
+		const baseURL = "http://3.143.227.73/report?play=" + global.counter_no;
 		axios({
 			method: "get",
 			url: baseURL,
