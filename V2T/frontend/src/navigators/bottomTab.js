@@ -7,11 +7,13 @@ import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 
 import RosterStack from "./rosterStack";
 import ProfileStack from "./profileStack";
 import RecordStack from "./recordStack";
 import StatStack from "./statStack";
+import HistoryStack from "./historyStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -141,6 +143,41 @@ export default function BottomTab(props) {
 						) : (
 							<View>
 								<Entypo name="users" size={20} color="#edf2fb" />
+							</View>
+						),
+				}}
+			/>
+			<Tab.Screen
+				name="History tab"
+				component={HistoryStack}
+				options={{
+					tabBarLabel: ({ focused }) =>
+						focused ? (
+							<Text
+								style={{
+									fontWeight: "700",
+									color: "white",
+									fontSize: 13,
+									paddingBottom: 5,
+								}}
+							>
+								History
+							</Text>
+						) : (
+							<Text
+								style={{ fontSize: 12, color: "#edf2fb", paddingBottom: 5 }}
+							>
+								History
+							</Text>
+						),
+					tabBarIcon: ({ focused }) =>
+						focused ? (
+							<View style={styles.iconContainer}>
+								<MaterialIcons name="history" size={27} color="white" />
+							</View>
+						) : (
+							<View>
+								<MaterialIcons name="history" size={24} color="#edf2fb" />
 							</View>
 						),
 				}}

@@ -14,7 +14,6 @@ global.counter_no = 1;
 export default function App() {
 	const [loggedIn, setLoggedIn] = useState(false);
 	useEffect(() => {
-		console.log("ehrer");
 		const fetchData = async () => {
 			SecureStore.getItemAsync("token")
 				.then((res) => {
@@ -23,7 +22,6 @@ export default function App() {
 					} else {
 						setLoggedIn(false);
 					}
-					console.log("hit");
 				})
 				.catch((err) => {
 					console.log(err);

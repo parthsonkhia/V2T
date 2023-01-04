@@ -6,6 +6,7 @@ import {
 	Text,
 	Image,
 	ActivityIndicator,
+	TextInput,
 } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 import * as ImagePicker from "expo-image-picker";
@@ -22,6 +23,7 @@ const Profile = ({ navigation, loggedIn, setLoggedIn }) => {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [phone, setPhone] = useState("");
+	const [canEdit, setCanEdit] = useState(false);
 
 	const handlePress = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
@@ -70,6 +72,14 @@ const Profile = ({ navigation, loggedIn, setLoggedIn }) => {
 			.catch((err) => console.log(err));
 	};
 
+	const handleEditProfile = () => {
+		setCanEdit(true);
+	};
+
+	const handleEditSave = () => {
+		setCanEdit(false);
+	};
+
 	return (
 		<View style={styles.parentContainer}>
 			{!loading ? (
@@ -91,19 +101,48 @@ const Profile = ({ navigation, loggedIn, setLoggedIn }) => {
 					</View>
 					<View style={styles.textContainer}>
 						<Text style={styles.fieldNameStyle}>Name: </Text>
-						<Text style={styles.userDataStyle}>{name}</Text>
+						<TextInput
+							style={styles.userDataStyle}
+							value={name}
+							onChange={setName}
+							editable={canEdit}
+						/>
 					</View>
 					<View style={styles.textContainer}>
 						<Text style={styles.fieldNameStyle}>Email: </Text>
-						<Text style={styles.userDataStyle}>{email}</Text>
+						<Text
+							style={
+								canEdit
+									? [styles.userDataStyle, { color: "grey" }]
+									: styles.userDataStyle
+							}
+						>
+							{email}
+						</Text>
 					</View>
 					<View style={styles.textContainer}>
 						<Text style={styles.fieldNameStyle}>Phone: </Text>
-						<Text style={styles.userDataStyle}>{phone}</Text>
+						<Text
+							style={
+								canEdit
+									? [styles.userDataStyle, { color: "grey" }]
+									: styles.userDataStyle
+							}
+						>
+							{phone}
+						</Text>
 					</View>
 					<View style={styles.textContainer}>
 						<Text style={styles.fieldNameStyle}>Role: </Text>
-						<Text style={styles.userDataStyle}>{role}</Text>
+						<Text
+							style={
+								canEdit
+									? [styles.userDataStyle, { color: "grey" }]
+									: styles.userDataStyle
+							}
+						>
+							{role}
+						</Text>
 					</View>
 					{/* <View>
 				<TouchableOpacity>
@@ -128,19 +167,44 @@ const Profile = ({ navigation, loggedIn, setLoggedIn }) => {
 					dropdownStyle={styles.selectionDropdown}
 				/>
 			</View> */}
-					<View style={styles.signOutButton}>
-						<Button
-							text="Log Out"
-							marginTop={10}
-							onButtonPress={handleSignOut}
-							textStyle={{ color: "#FFF" }}
-							buttonStyle={{
-								backgroundColor: "#6096ba",
-								borderWidth: 0,
-								marginTop: 50,
-							}}
-						/>
-					</View>
+					{!canEdit ? (
+						<View>
+							<View style={styles.signOutButton}>
+								<Button
+									text="Edit Profile"
+									marginTop={50}
+									onButtonPress={handleEditProfile}
+									textStyle={{ color: "#6096ba" }}
+								/>
+							</View>
+							<View style={styles.signOutButton}>
+								<Button
+									text="Log Out"
+									marginTop={10}
+									onButtonPress={handleSignOut}
+									textStyle={{ color: "#FFF" }}
+									buttonStyle={{
+										backgroundColor: "#6096ba",
+										borderWidth: 0,
+									}}
+								/>
+							</View>
+						</View>
+					) : (
+						<View style={styles.signOutButton}>
+							<Button
+								text="Save"
+								marginTop={10}
+								onButtonPress={handleEditSave}
+								textStyle={{ color: "#FFF" }}
+								buttonStyle={{
+									backgroundColor: "#6096ba",
+									borderWidth: 0,
+									marginTop: 50,
+								}}
+							/>
+						</View>
+					)}
 				</View>
 			) : (
 				<ActivityIndicator size="large" color="#6096ba" />
