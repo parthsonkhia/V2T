@@ -1,19 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import {
 	View,
 	StyleSheet,
 	Text,
 	ScrollView,
 	ActivityIndicator,
+	RefreshControl,
+  	Button,
 } from "react-native";
 import axios from "axios";
 
 const Statistics = () => {
 	const [loading, setLoading] = useState(true);
 	const [stat_data, setData] = useState([]);
+	// const [reducerValue, forceUpdate] = useReducer(x => x+1,0);
 
 	useEffect(() => {
-		const baseURL = "http://3.143.227.73/report?play=" + global.counter_no;
+		const baseURL = "http://13.58.30.107/report?play=" + global.counter_no;
 		axios({
 			method: "get",
 			url: baseURL,
@@ -21,16 +24,20 @@ const Statistics = () => {
 			.then((response) => {
 				setData([response.data]);
 				setLoading(false);
+				console.log(response.data)
 			})
 			.catch((err) => {
 				console.error(err);
 			});
 	}, []);
-
+	// function clickfunction() {
+	// 	forceUpdate();
+	// }
 	return (
 		<View style={styles.parentContainer}>
 			{!loading ? (
 				<ScrollView showsVerticalScrollIndicator={false}>
+					<Button onClick="" title="Refresh">Refresh</Button>
 					<View style={styles.container}>
 						<View style={styles.label}>
 							<Text style={styles.labelText}>First Down Efficiency</Text>

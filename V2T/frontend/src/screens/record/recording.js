@@ -32,7 +32,7 @@ const Recording = () => {
 	const [loading, setLoading] = useState(false);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [gameName, setGameName] = useState("");
-	const baseURL = "http://3.143.227.73";
+	const baseURL = "http://13.58.30.107";
 
 	const startRecording = async () => {
 		try {
