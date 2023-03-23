@@ -23,6 +23,7 @@ const Profile = ({ navigation, loggedIn, setLoggedIn }) => {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [phone, setPhone] = useState("");
+	const [team,setTeam] = useState("");
 	const [canEdit, setCanEdit] = useState(false);
 
 	const handlePress = async () => {
@@ -41,6 +42,7 @@ const Profile = ({ navigation, loggedIn, setLoggedIn }) => {
 		const fetchData = async () => {
 			SecureStore.getItemAsync("token")
 				.then((res) => {
+					console.log(res);
 					const baseURL =
 						"https://data.mongodb-api.com/app/data-ahunl/endpoint/userInfo?token=" +
 						res;
@@ -53,6 +55,7 @@ const Profile = ({ navigation, loggedIn, setLoggedIn }) => {
 							setEmail(response.data.email);
 							setPhone(response.data.phone);
 							setRole(response.data.role);
+							setTeam(response.data.team)
 							setLoading(false);
 						})
 						.catch((err) => {
@@ -142,6 +145,18 @@ const Profile = ({ navigation, loggedIn, setLoggedIn }) => {
 							}
 						>
 							{role}
+						</Text>
+					</View>
+					<View style={styles.textContainer}>
+						<Text style={styles.fieldNameStyle}>Team: </Text>
+						<Text
+							style={
+								canEdit
+									? [styles.userDataStyle, { color: "grey" }]
+									: styles.userDataStyle
+							}
+						>
+							{team}
 						</Text>
 					</View>
 					{/* <View>

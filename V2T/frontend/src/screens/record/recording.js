@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
 	TouchableOpacity,
 	StyleSheet,
@@ -14,11 +14,14 @@ import {
 	Modal,
 } from "react-native";
 import { Audio } from "expo-av";
+import Label from "../../components/label";
 import axios from "axios";
 import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import Button from "../../components/button";
+import SelectDropdown from "react-native-select-dropdown";
+import * as SecureStore from "expo-secure-store";
 
 const Recording = () => {
 	const [recording, setRecording] = useState();
@@ -32,7 +35,27 @@ const Recording = () => {
 	const [loading, setLoading] = useState(false);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [gameName, setGameName] = useState("");
+	const [role, setRole] = useState("");
+	const [teamList,setTeamList] = useState([]);
+	const [oppTeam,setOppTeam] = useState("");
 	const baseURL = "http://13.58.30.107";
+	const [loaded, setLoaded] = useState(false);
+	const [gameType, setGameType] = useState("");
+
+	useEffect(() => {
+		axios({
+		  method: "get",
+		  url: `https://data.mongodb-api.com/app/data-ahunl/endpoint/team_list`,
+		})
+		  .then((response) => {
+			setTeamList(response.data);
+			console.log(response.data);
+			setLoaded(true);
+		  })
+		  .catch((err) => {
+			console.error(err);
+		  });
+	  }, []);
 
 	const startRecording = async () => {
 		try {
@@ -139,6 +162,26 @@ const Recording = () => {
 		setCurrentTranscript("");
 		setIsEditable(false);
 		setLoading(false);
+	};
+
+	const newGameInsertion = () => {
+		const fetchData = async () => {
+			SecureStore.getItemAsync("token")
+				.then((res) => {
+					axios({
+						method: "post",
+						url:
+							"https://data.mongodb-api.com/app/data-ahunl/endpoint/new_game?oppteam=" + oppTeam + "&gametype=" + gameType + "&token=" + res,
+					})
+						.then((response) => {console.log("New game added!!");})
+						.catch((err) => {
+							console.error(err);
+					});
+				}).catch((err) => {
+					console.log(err);
+				});
+			};
+		fetchData();
 	};
 
 	const saveCurrentRecording = () => {
@@ -317,7 +360,7 @@ const Recording = () => {
 						)}
 					</View>
 				</View>
-				{previousRecordings.length > 0 && !mic ? (
+				{/* {previousRecordings.length > 0 && !mic ? (
 					<TouchableOpacity
 						style={styles.newGameBox}
 						activeOpacity={0.7}
@@ -327,7 +370,14 @@ const Recording = () => {
 					</TouchableOpacity>
 				) : (
 					<View style={styles.newGameDummyBox} />
-				)}
+				)} */}
+				<TouchableOpacity
+						style={styles.newGameBox}
+						activeOpacity={0.7}
+						onPress={() => setModalVisible(true)}
+					>
+						<Text style={styles.newGameText}> New Game </Text>
+					</TouchableOpacity>
 				<Modal
 					animationType="slide"
 					transparent={true}
@@ -343,15 +393,53 @@ const Recording = () => {
 								<Text style={styles.modalText}>
 									Enter the name of the new game you wish to create
 								</Text>
-								<TextInput
+								{/* <TextInput
 									style={styles.newGameName}
 									onChangeText={setGameName}
 									value={gameName}
 									placeholder="Team 1 vs Team 2"
-								/>
+								/> */}
+								{/* <Label text="Opponent Team" /> */}
+								<View style={styles.modalView1}>
+								<Text style={styles.LabelText}>Opponent Team: </Text>
+								{loaded && 
+								<SelectDropdown
+									data={teamList}
+									rowTextForSelection={(item, index) => {
+										return item.name;
+									}}
+									onSelect={(selectedItem, index) => {
+										setOppTeam(selectedItem.name);
+									}}
+									buttonTextAfterSelection={(selectedItem, index) => {
+										return selectedItem.name;
+									}}
+									buttonStyle={styles.selectionButton}
+									buttonTextStyle={styles.selectionButtonText}
+									dropdownStyle={styles.selectionDropdown}
+								/>}
+								</View>
+								<View style={styles.modalView1}>
+									<Text style={styles.LabelText1}>Game Type: </Text>
+									<SelectDropdown
+										data={['Home Game','Away Game']}
+										rowTextForSelection={(item, index) => {
+											return item;
+										}}
+										onSelect={(selectedItem, index) => {
+											setGameType(selectedItem);
+										}}
+										buttonTextAfterSelection={(selectedItem, index) => {
+											return selectedItem;
+										}}
+										buttonStyle={styles.selectionButton}
+										buttonTextStyle={styles.selectionButtonText}
+										dropdownStyle={styles.selectionDropdown}
+									/>
+								</View>
 								<TouchableOpacity
 									style={[styles.button, styles.buttonContinue]}
-									onPress={() => setModalVisible(!modalVisible)}
+									onPress={() => {setModalVisible(!modalVisible); newGameInsertion()}}
 								>
 									<Text style={styles.textStyle}>Continue</Text>
 								</TouchableOpacity>
@@ -540,6 +628,10 @@ const styles = StyleSheet.create({
 		marginBottom: 15,
 		textAlign: "center",
 	},
+	modalTextLabel: {
+		marginBottom: 15,
+		textAlign: "left",
+	},
 	newGameName: {
 		borderBottomWidth: 1,
 		marginBottom: 10,
@@ -547,6 +639,40 @@ const styles = StyleSheet.create({
 		paddingVertical: 2,
 		minWidth: 250,
 	},
+	selectionButton: {
+		height: 50,
+		borderWidth: 1,
+		width: "70%",
+		borderRadius: 10,
+		paddingHorizontal: 10,
+		backgroundColor: "transparent",
+		marginBottom: 10,
+	},
+	selectionDropdown: {
+		width: "55%",
+		flex: 1,
+		borderRadius: 10,
+		paddingHorizontal: 10,
+		marginBottom: 10,
+	},
+	LabelText: {
+		fontWeight: "600",
+		fontSize: 16,
+		paddingBottom:10,
+		paddingRight: 10
+	},
+	LabelText1: {
+		fontWeight: "600",
+		fontSize: 16,
+		paddingBottom:10,
+		paddingLeft:10,
+		paddingRight: 30
+	},
+	modalView1: {
+		width: "100%",
+		flexDirection: "row",
+		alignItems: "center"
+	}
 });
 
 export default Recording;

@@ -2,29 +2,79 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet, ActivityIndicator, TextInput, Text, TouchableOpacity } from "react-native";
 import PlayerList from "./playerList";
 import axios from "axios";
+import * as SecureStore from "expo-secure-store";
 
 const Roster = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filteredData, setFilteredData] = useState([]);
+  const [role, setRole] = useState("");
   const [searchText, setSearchText] = useState('');
-  const [arg1, setArg1] = useState('DEF');
+  const [arg1, setArg1] = useState('BUF');
+  const [arg2, setArg2] = useState('ATT');
 
   const baseURL = "https://data.mongodb-api.com/app/data-ahunl/endpoint";
 
   useEffect(() => {
+    const fetchData = async () => {
+      console.log("Getting Token");
+			SecureStore.getItemAsync("token")
+				.then((res) => {
+          console.log("Got Token : ",res);
+					const baseURL =
+						"https://data.mongodb-api.com/app/data-ahunl/endpoint/userInfo?token=" +
+						res;
+					axios({
+						method: "get",
+						url: baseURL,
+					})
+						.then((response) => {
+              console.log("Got User Details :- ",response.data);
+							setRole(response.data.role);
+              setArg1(response.data.teamAbr);
+              if (response.data.role == "Offense Coach")
+                setArg2('ATT');
+              else if (response.data.role == "Defense Coach")
+                setArg2('DEF');
+						})
+						.catch((err) => {
+							console.error(err);
+						});
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		};
+		fetchData();
+    // axios({
+    //   method: "get",
+    //   url: `${baseURL}/roster_details?arg1=${arg1}&arg2=${arg2}`,
+    // })
+    //   .then((response) => {
+    //     setData(response.data);
+    //     console.log(response.data);
+    //     setLoading(false);
+    //   })
+    //   .catch((err) => {
+    //     console.error(err);
+    //   });
+  }, [arg1]);
+
+  useEffect(() => {
     axios({
       method: "get",
-      url: `${baseURL}/roster_details?arg1=${arg1}`,
+      url: `${baseURL}/roster_details?arg1=${arg1}&arg2=${arg2}`,
     })
       .then((response) => {
         setData(response.data);
+        console.log("ROSTER DATA :- ",response.data);
         setLoading(false);
       })
       .catch((err) => {
         console.error(err);
       });
-  }, [arg1]);
+
+  },[arg1,arg2]);
 
   useEffect(() => {
     // Filter data based on searchText
@@ -38,18 +88,18 @@ const Roster = () => {
     <View style={styles.container}>
       <View style={styles.row}>
         <TouchableOpacity
-          style={[styles.button, arg1 === 'DEF' && styles.activeButton]}
-          onPress={() => setArg1('DEF')}
+          style={[styles.button, arg2 === 'DEF' && styles.activeButton]}
+          onPress={() => setArg2('DEF')}
         >
-          <Text style={[styles.buttonText, arg1 === 'DEF' && styles.activeButtonText]}>
+          <Text style={[styles.buttonText, arg2 === 'DEF' && styles.activeButtonText]}>
             DEF
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, arg1 === 'ATT' && styles.activeButton]}
-          onPress={() => setArg1('ATT')}
+          style={[styles.button, arg2 === 'ATT' && styles.activeButton]}
+          onPress={() => setArg2('ATT')}
         >
-          <Text style={[styles.buttonText, arg1 === 'ATT' && styles.activeButtonText]}>
+          <Text style={[styles.buttonText, arg2 === 'ATT' && styles.activeButtonText]}>
             ATT
           </Text>
         </TouchableOpacity>

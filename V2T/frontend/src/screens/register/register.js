@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
 	View,
 	StyleSheet,
@@ -6,6 +6,7 @@ import {
 	Text,
 	TouchableWithoutFeedback,
 	Keyboard,
+	ScrollView,
 } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 import Button from "../../components/button";
@@ -15,16 +16,45 @@ import * as SecureStore from "expo-secure-store";
 
 const Register = ({ navigation, route, setLoggedIn }) => {
 	const roles = ["Offense Coach", "Defense Coach", "Head Coach", "Other"];
+	const [team, setTeam] = useState([]);
 	const [name, setName] = useState("");
+	const [loaded, setLoaded] = useState(false);
+	var teamlist=[]
+	var teamabr=[]
 	const [email, setEmail] = useState("");
 	const [phone, setPhone] = useState("");
 	const [role, setRole] = useState("");
+	const [userteam,setUserTeam] = useState("");
+	const [userteamAbr,setUserTeamAbr] = useState("");
 	const [password, setPassword] = useState("");
 	const [validName, setValidName] = useState(true);
 	const [validEmail, setValidEmail] = useState(true);
 	const [validPassword, setValidPassword] = useState(true);
 	const [validPhone, setValidPhone] = useState(true);
 	const [validRole, setValidRole] = useState(true);
+	const [validTeam, setValidTeam] = useState(true);
+	const baseURL = "https://data.mongodb-api.com/app/data-ahunl/endpoint";
+	useEffect(() => {
+		axios({
+		  method: "get",
+		  url: `${baseURL}/team_list`,
+		})
+		  .then((response) => {
+			setTeam(response.data);
+			for (let i=0;i<response.data.length;i++)
+			{
+				teamlist.push(response.data[i].name);
+				teamabr.push(response.data[i].abbr);
+			}
+			console.log(response.data);
+			console.log(teamlist);
+			console.log(teamabr);
+			setLoaded(true);
+		  })
+		  .catch((err) => {
+			console.error(err);
+		  });
+	  }, []);
 	const actionRegister = () => {
 		const baseURL =
 			"https://data.mongodb-api.com/app/data-ahunl/endpoint/user/register";
@@ -34,7 +64,10 @@ const Register = ({ navigation, route, setLoggedIn }) => {
 			phone,
 			role,
 			password,
+			userteam,
+			userteamAbr
 		};
+		console.log("This is data being send for registration: ",data)
 		axios({
 			method: "post",
 			url: baseURL,
@@ -95,7 +128,7 @@ const Register = ({ navigation, route, setLoggedIn }) => {
 			setValidPassword(true);
 		}
 		// phone number check
-		if (phone == "" || phone.length !== 10 || phone.charAt(0) < 7) {
+		if (phone == "" || phone.length !== 10) {
 			valid -= 1;
 			setValidPhone(false);
 		} else {
@@ -110,12 +143,21 @@ const Register = ({ navigation, route, setLoggedIn }) => {
 			valid += 1;
 			setValidRole(true);
 		}
+		// team check
+		if (userteam == ""){
+			valid -= 1;
+			setValidTeam(false);
+		} else {
+			valid += 1;
+			setValidTeam(true);
+		}
 
-		if (valid === 5) {
+		if (valid === 6) {
 			actionRegister();
 		}
 	};
 	return (
+		<ScrollView>
 		<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
 			<View style={styles.container}>
 				<Label text="Name" />
@@ -181,6 +223,29 @@ const Register = ({ navigation, route, setLoggedIn }) => {
 				) : (
 					<Text style={{ color: "red" }}>Please select a role</Text>
 				)}
+				<Label text="Team" />
+				{loaded && (
+				<SelectDropdown
+					data={team}
+					rowTextForSelection={(item, index) => {
+						return item.name;
+					}}
+					onSelect={(selectedItem, index) => {
+						setUserTeam(selectedItem.name);
+						setUserTeamAbr(selectedItem.abbr);
+					}}
+					buttonTextAfterSelection={(selectedItem, index) => {
+						return selectedItem.name;
+					}}
+					buttonStyle={styles.selectionButton}
+					buttonTextStyle={styles.selectionButtonText}
+					dropdownStyle={styles.selectionDropdown}
+				/>)}
+				{validTeam ? (
+					<View style={{ height: 20 }} />
+				) : (
+					<Text style={{ color: "red" }}>Please select a team</Text>
+				)}
 				<Button
 					text="GO"
 					marginTop={60}
@@ -196,6 +261,7 @@ const Register = ({ navigation, route, setLoggedIn }) => {
 				/>
 			</View>
 		</TouchableWithoutFeedback>
+		</ScrollView>
 	);
 };
 
