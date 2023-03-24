@@ -184,7 +184,7 @@ const Recording = () => {
 		fetchData();
 	};
 
-	const saveCurrentRecording = () => {
+	const saveCurrentRecording = async () => {
 		let updatedPreviousRecordings = [...previousRecordings];
 		let lastRecording = updatedPreviousRecordings.pop();
 		lastRecording.transcript = currentTranscript;
@@ -194,25 +194,29 @@ const Recording = () => {
 		setCurrentTranscript("");
 		setIsEditable(false);
 		//
-		const params = new URLSearchParams({
-			game: "BUF VS Opponent",
-			counter_no: global.counter_no,
-			transcript: currentTranscript,
-		});
-		axios({
-			method: "post",
-			url:
-				"https://data.mongodb-api.com/app/data-ahunl/endpoint/add_transcript?" +
-				params,
-			headers: {
-				Accept: "application/json",
-				"Content-Type": "multipart/form-data",
-			},
-		})
-			.then((response) => {})
-			.catch((err) => {
-				console.error(err);
+		SecureStore.getItemAsync("token")
+		.then((res) => {
+			const params = new URLSearchParams({
+				transcript: currentTranscript,
+				token: res
 			});
+			axios({
+				method: "post",
+				url:
+					"https://data.mongodb-api.com/app/data-ahunl/endpoint/add_transcript?" +
+					params,
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "multipart/form-data",
+				},
+			})
+				.then((response) => {})
+				.catch((err) => {
+					console.error(err);
+				});
+		}).catch((err) => {
+			console.log(err);
+		});
 	};
 
 	const handleShowTranscript = (index) => {
