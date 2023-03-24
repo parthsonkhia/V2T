@@ -14,6 +14,7 @@ import ProfileStack from "./profileStack";
 import RecordStack from "./recordStack";
 import StatStack from "./statStack";
 import HistoryStack from "./historyStack";
+import TimelineStack from "./timelineStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -108,6 +109,41 @@ export default function BottomTab(props) {
 									size={20}
 									color="#edf2fb"
 								/>
+							</View>
+						),
+				}}
+			/>
+			<Tab.Screen
+				name="Timeline tab"
+				component={TimelineStack}
+				options={{
+					tabBarLabel: ({ focused }) =>
+						focused ? (
+							<Text
+								style={{
+									fontWeight: "700",
+									color: "white",
+									fontSize: 13,
+									paddingBottom: 5,
+								}}
+							>
+								Timeline
+							</Text>
+						) : (
+							<Text
+								style={{ fontSize: 12, color: "#edf2fb", paddingBottom: 5 }}
+							>
+								Timeline
+							</Text>
+						),
+					tabBarIcon: ({ focused }) =>
+						focused ? (
+							<View style={styles.iconContainer}>
+								<Entypo name="time-slot" size={23} color="white" />
+							</View>
+						) : (
+							<View>
+								<Entypo name="time-slot" size={20} color="#edf2fb" />
 							</View>
 						),
 				}}

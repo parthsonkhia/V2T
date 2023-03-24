@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
 	Text,
 	View,
@@ -10,15 +10,38 @@ import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
+import * as SecureStore from "expo-secure-store";
+import axios from "axios";
 export const History = () => {
 	const [showTranscript, setShowTranscript] = useState(-1);
 	const [showRecordingList, setShowRecordingList] = useState(-1);
 	const [userHistory, setUserHistory] = useState([
 		{ game: "Game 1", recordings: ["rec1", "rec2", "rec3"] },
-		{ game: "Game 2", recordings: ["rec1", "rec2", "rec3"] },
-		{ game: "Game 3", recordings: ["rec1", "rec2", "rec3"] },
-		{ game: "Game 4", recordings: ["rec1", "rec2", "rec3"] },
 	]);
+	useEffect(() => {
+		const fetchData = async () => {
+			SecureStore.getItemAsync("token")
+				.then((res) => {
+					const baseURL =
+						"https://data.mongodb-api.com/app/data-ahunl/endpoint/history?token=" +
+						res;
+					axios({
+						method: "get",
+						url: baseURL,
+					})
+						.then((response) => {
+							setUserHistory(response.data);
+						})
+						.catch((err) => {
+							console.error(err);
+						});
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		};
+		fetchData();
+	}, []);
 
 	const handleShowTranscript = (gameIndex, recordingIndex) => {
 		if (showTranscript == recordingIndex) {
@@ -69,7 +92,7 @@ export const History = () => {
 													]}
 												>
 													<Text style={styles.recordingNameText}>
-														{recording}
+														{recording.timestamp}
 													</Text>
 													<View style={styles.recordingButtonContainer}>
 														<TouchableOpacity
@@ -94,7 +117,7 @@ export const History = () => {
 													<View style={styles.transcriptBoxStyle}>
 														<Text style={styles.transcriptBoxText}>
 															{/* {recording.transcript} */}
-															{recording}
+															{recording.transcript}
 														</Text>
 													</View>
 												) : null}

@@ -37,7 +37,7 @@ const Statistics = () => {
 		<View style={styles.parentContainer}>
 			{!loading ? (
 				<ScrollView showsVerticalScrollIndicator={false}>
-					<Button onClick="" title="Refresh">Refresh</Button>
+					<Button title="Refresh">Refresh</Button>
 					<View style={styles.container}>
 						<View style={styles.label}>
 							<Text style={styles.labelText}>First Down Efficiency</Text>
