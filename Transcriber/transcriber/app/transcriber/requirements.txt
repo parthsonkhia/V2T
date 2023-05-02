@@ -4,3 +4,4 @@ openai-whisper
 spacy
 pandas
 pydantic 
+python-multipart
