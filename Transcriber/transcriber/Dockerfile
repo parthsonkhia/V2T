@@ -1,9 +1,11 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7
+FROM python:3.9
 
-COPY ./app/transcriber/requirements.txt /app/requirements.txt
+WORKDIR /code
 
-RUN pip install -r /app/requirements.txt
-RUN python -m spacy download en
-RUN python -m spacy download en_core_web_sm
+COPY ./app/transriber/requirements.txt /code/requirements.txt
 
-COPY ./app/transcriber /app
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+
+COPY ./app/transcriber /code/app
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]

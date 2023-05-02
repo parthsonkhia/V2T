@@ -3,3 +3,4 @@ uvicorn
 openai-whisper
 spacy
 pandas
+pydantic 
