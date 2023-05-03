@@ -355,18 +355,18 @@ def extract_name(json):
   except KeyError:
     return ""
 
-def get_text(number):
-  if number != 'None':
-    r = requests.get(f"https://data.mongodb-api.com/app/data-ahunl/endpoint/get_transcript_data?counter={number}")
+def get_text(game_id):
+  if game_id != None:
+    r = requests.get(f"https://data.mongodb-api.com/app/data-ahunl/endpoint/get_transcript_data?game_id={game_id}")
     json_object = r.json()
     json_object.sort(key=extract_name)
     sentences = [i['Transcript'] for i in json_object]
     return sentences
   else:
-    return number
+    return game_id
 
 @app.get('/report')
-async def generate_report(play: int):
+async def generate_report(game_id: int):
     Play = []
     columns = [
     "Play Number",
@@ -383,7 +383,31 @@ async def generate_report(play: int):
     "OFF Form",
     "DEF Form"
     ]
-    sentences = get_text(number=play)
+    sentences = get_text(game_id=game_id)
+    if sentences == []:
+      df = pd.DataFrame(data=[], columns=columns)
+      return  {
+        "result": {
+            "statistics": {
+                "total_first_down": 0,
+                "first_down_efficiency":0,
+                "total_second_down":0,
+                "second_down_efficiency":0,
+                "total_third_down":0,
+                "third_down_efficiency":0,
+                "total_fourth_down":0,
+                "fourth_down_efficiency":0,
+                "total_plays":0,
+                "n_punts":0,
+                "n_touchdowns":0,
+                "total_yards":0,
+                "passing_yards":0,
+                "rushing_yards":0,
+                "yards_per_play":0,
+            },
+            "data":df.to_dict(),
+        }
+      }
     for sentence in sentences:
         all_lines = sentence.split(",")
         for line in all_lines:
