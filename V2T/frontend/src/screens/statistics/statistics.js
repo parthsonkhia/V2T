@@ -20,13 +20,15 @@ const Statistics = () => {
 
   const fetchData = () => {
     setLoading(true);
-    const baseURL = "http://13.58.30.107/report?play=" + global.counter_no;
+    const baseURL = "http://3.12.84.145/report?play=" + global.counter_no;
     axios({
       method: "get",
       url: baseURL,
     })
       .then((response) => {
         setData([response.data]);
+		console.log(baseURL)
+		console.log(response);
         setLoading(false);
         console.log(response.data);
       })
@@ -40,18 +42,20 @@ const Statistics = () => {
   }, []);
 
   const handleRefresh = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        "http://13.58.30.107/report?play=" + global.counter_no
-      );
-      setData([response.data]);
-      console.log("Success Refresh");
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
+	try {
+		console.log("IN REFRESH!!!!!!")
+	  const response = await axios.get(
+		"http://3.12.84.145/report?play=" + global.counter_no
+	  );
+	  setData([response.data]);
+	  console.log("Success Refresh");
+	} catch (error) {
+	  console.log(error);
+	}
+  };
+  const onRefresh = () => {
+	setLoading(true);
+	handleRefresh().finally(() => setLoading(false));
   };
 
   const toggleAdvancedStats = () => {
@@ -659,7 +663,7 @@ const Statistics = () => {
               value={showAdvancedStats}
             />
           </View>
-          <Button onPress={handleRefresh} title="Refresh">
+          <Button onPress={onRefresh} title="Refresh">
             Refresh
           </Button>
           {showAdvancedStats ? renderAdvancedStats() : renderBasicStats()}

@@ -38,7 +38,7 @@ const Recording = () => {
 	const [role, setRole] = useState("");
 	const [teamList,setTeamList] = useState([]);
 	const [oppTeam,setOppTeam] = useState("");
-	const baseURL = "http://13.58.30.107";
+	const baseURL = "http://3.12.84.145";
 	const [loaded, setLoaded] = useState(false);
 	const [gameType, setGameType] = useState("");
 

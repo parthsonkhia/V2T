@@ -8,6 +8,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import RosterStack from "./rosterStack";
 import ProfileStack from "./profileStack";
@@ -15,6 +16,7 @@ import RecordStack from "./recordStack";
 import StatStack from "./statStack";
 import HistoryStack from "./historyStack";
 import TimelineStack from "./timelineStack";
+import PlaybookStack from "./playbookStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -179,6 +181,41 @@ export default function BottomTab(props) {
 						) : (
 							<View>
 								<Entypo name="users" size={20} color="#edf2fb" />
+							</View>
+						),
+				}}
+			/>
+			<Tab.Screen
+				name="Playbook tab"
+				component={PlaybookStack}
+				options={{
+					tabBarLabel: ({ focused }) =>
+						focused ? (
+							<Text
+								style={{
+									fontWeight: "700",
+									color: "white",
+									fontSize: 13,
+									paddingBottom: 5,
+								}}
+							>
+								Plays
+							</Text>
+						) : (
+							<Text
+								style={{ fontSize: 12, color: "#edf2fb", paddingBottom: 5 }}
+							>
+								Plays
+							</Text>
+						),
+					tabBarIcon: ({ focused }) =>
+						focused ? (
+							<View style={styles.iconContainer}>
+								<MaterialCommunityIcons name="strategy" size={23} color="white" />
+							</View>
+						) : (
+							<View>
+								<MaterialCommunityIcons name="strategy" size={20} color="#edf2fb" />
 							</View>
 						),
 				}}
