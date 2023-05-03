@@ -24,27 +24,6 @@ import pymongo
 import random
 import openai
 
-
-payload = {'arg1': 'BUF', 'arg2': 'OFF'}
-url = 'https://data.mongodb-api.com/app/data-ahunl/endpoint/playbook_details'
-r = requests.get(url,  params=payload)
-# Extract play_name from the response
-off_plays = [obj['play_name'] for obj in r.json()]
-
-play_napayload = {'arg1': 'BUF', 'arg2': 'DEF'}
-url = 'https://data.mongodb-api.com/app/data-ahunl/endpoint/playbook_details'
-r = requests.get(url,  params=payload)
-# Extract play_name from the response
-def_plays = [obj['play_name'] for obj in r.json()]
-
-
-
-
-Playbook = {
-    'OFF': off_plays,
-    'DEF': def_plays
-}
-
 class Pass:
   pass_from: str
   pass_to: str
@@ -150,15 +129,6 @@ class Punt:
     self.by = by
     self.final_yard_line = final_yard_line
 
-
-class Forms:
-    name : str
-    form_type : str 
-    
-    def __init__(self, name, form_type):
-        self.name = name
-        self.form_type = form_type 
-
 #class Sacked
 #class Fumble  
 #class Penalty 
@@ -198,22 +168,8 @@ async def transcribe_file(file: bytes = File()):
     audio = whisper.load_audio("sample.mp4")
     result = model.transcribe(audio)
     os.remove("sample.mp4")
-    # Code to check if numeberst exist in result 
-    if has_number(result):
-      pass 
-    else:
-      post_highlights(result['text'])
-
     return {'result': result}
 
-def has_number(string):
-    """
-    Returns True if string contains any number, False otherwise.
-    """
-    for char in string:
-        if char.isdigit():
-            return True
-    return False
 
 @app.post('/play')
 async def transcribe_file(play: Item):
@@ -239,12 +195,9 @@ def find_distance(yard_line_1, yard_line_2):
       d2 = 50 - number2 
       return abs(d1 + d2) 
   except:
-    try:
-      base2, number2 = yard_line_2.split(' ')
-      number2 = int(number2)
-      return number2 - 0
-    except:
-      return 0
+    base2, number2 = yard_line_2.split(' ')
+    number2 = int(number2)
+    return number2 - 0
 
 def get_rows(plays, previous_yard_line, play_counter):
   current_yard_line = ""
@@ -257,8 +210,6 @@ def get_rows(plays, previous_yard_line, play_counter):
   play_to = 'None'
   p = 'Play'
   result = ''
-  off_form = ''
-  def_form = ''
   for d in plays:
       try:
         if str(d.__class__) == "<class 'transcriber.Play_position'>":
@@ -326,19 +277,10 @@ def get_rows(plays, previous_yard_line, play_counter):
           previous_yard_line = ""
       except:
         pass
-
-      try:
-          if str(d.__class__) == "<class 'transcriber.Forms'>":
-              if d.form_type == "OFF":
-                  off_form = d.name 
-              if d.form_type == "DEF":
-                  def_form = d.name
-      except:
-          pass 
   
   gain = find_distance(previous_yard_line, current_yard_line)
   previous_yard_line = current_yard_line
-  row = [play_counter, ODK, DN, Distance, Hash, Yard_line, p, result, gain, play_by, play_to, off_form, def_form]
+  row = [play_counter, ODK, DN, Distance, Hash, Yard_line, p, result, gain, play_by, play_to]
   play_counter += 1
   return row, previous_yard_line, play_counter
 
@@ -369,7 +311,7 @@ def get_text(number):
 async def generate_report(play: int):
     Play = []
     columns = [
-    "Play Number",
+    "Play Numner",
     "ODK",
     "DN",
     "Distance",
@@ -379,12 +321,12 @@ async def generate_report(play: int):
     "Result",
     "GNLS",
     "Play By",
-    "Play To",
-    "OFF Form",
-    "DEF Form"
+    "Play To"
     ]
     sentences = get_text(number=play)
     for sentence in sentences:
+      try:
+        success_highlight = post_highlights(sentence)
         all_lines = sentence.split(",")
         for line in all_lines:
           doc = nlp(line)
@@ -468,16 +410,8 @@ async def generate_report(play: int):
             final_yard_line = lemmatized_sentence.split('to')
             punt = Punt(by=numbers[0], final_yard_line=final_yard_line[1])
             Play.append(punt)
-
-          for i in Playbook['OFF']:
-              if i.lower() in lemmatized_sentence.lower():
-                  form = Forms(name=i, form_type='OFF')
-                  Play.append(form)
-
-          for i in Playbook['DEF']:
-              if i.lower() in lemmatized_sentence.lower():
-                  form = Forms(name=i, form_type='OFF')
-                  Play.append(form)
+      except:
+        pass 
     play_counter = 1
     tmp_data = []
     data = []
@@ -582,29 +516,18 @@ def post_highlights(sentence):
     messages=[
           {"role": "system", "content": "You are a nfl football coach assistant."},
           {"role": "user", "content": f"{sentence}"},
-          {"role": "assistant", "content": "Extact the following information to be used for adding to mongo collection playerName, sentiment must be either ['positive', 'negative','neutral'] without explaination , rating between 1 to 10 without explaination , impact between 1 to 10 without explaination"},
+          {"role": "assistant", "content": "Extact the following information to be used for adding to mongo collection playerName, sentiment between ['positive', 'negative','neutral'], rating between 1 to 10, impact between 1 to 10"},
       ]
   )
   data = messages['choices'][0]['message']['content'].split("\n")
-  # Remove all empty strings
-  data = list(filter(None, data))
   added = {}
-  print(data)
-  if "Sorry" in data:
-      return True
-  try:
-    for item in data:
-        key = item.split(':')[0].strip()
-        if key == 'playerName':
-          value = item.split(':')[1].strip()
-          if '#' in value:
-            value = get_name(value.split('#')[0])
-          added[key] = get_name(value.lower())
-        else:
-            value = item.split(':')[1]
-            added[key] = value.lower()
-  except:
-    return True
+  for item in data:
+      key = item.split(':')[0].strip()
+      if key == 'playerName':
+        value = get_name(item.split(':')[1].strip())
+        if '#' in value:
+          value = value.split('#')[0]
+      added[key] = value.lower()
   
   added['gameid'] = "2023-03-17-BUF-PIT"
   added['timestamp'] = f"00:{random.randint(1,60)}"
@@ -613,11 +536,10 @@ def post_highlights(sentence):
   added['commentRole'] = 'ATT'
   added['commentBy'] = 'Parth Sonkhia'
 
-  # Update collection with new highlight
-  collection.update_one(
-    {"name":"Buffalo Bills"},
-    {"$push": {"highlights": added}}
+  result - collection.update_one({
+    "name": "Buffalo Bills"
+  },
+     {"$push": {"highlights": new_highlight}}
   )
-
 
   return True 
