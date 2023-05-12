@@ -20,6 +20,31 @@ import whisper
 model = whisper.load_model("base")
 options = whisper.DecodingOptions()
 
+import pymongo
+import random
+import openai
+
+
+payload = {'arg1': 'BUF', 'arg2': 'OFF'}
+url = 'https://data.mongodb-api.com/app/data-ahunl/endpoint/playbook_details'
+r = requests.get(url,  params=payload)
+# Extract play_name from the response
+off_plays = [obj['play_name'] for obj in r.json()]
+
+play_napayload = {'arg1': 'BUF', 'arg2': 'DEF'}
+url = 'https://data.mongodb-api.com/app/data-ahunl/endpoint/playbook_details'
+r = requests.get(url,  params=payload)
+# Extract play_name from the response
+def_plays = [obj['play_name'] for obj in r.json()]
+
+
+
+
+Playbook = {
+    'OFF': off_plays,
+    'DEF': def_plays
+}
+
 class Pass:
   pass_from: str
   pass_to: str
@@ -125,6 +150,15 @@ class Punt:
     self.by = by
     self.final_yard_line = final_yard_line
 
+
+class Forms:
+    name : str
+    form_type : str 
+    
+    def __init__(self, name, form_type):
+        self.name = name
+        self.form_type = form_type 
+
 #class Sacked
 #class Fumble  
 #class Penalty 
@@ -135,9 +169,26 @@ class Item(BaseModel):
 
 app = FastAPI()
 
+client = pymongo.MongoClient("mongodb+srv://admin:admin123@cluster1.rhgpgkk.mongodb.net/?retryWrites=true&w=majority")
+db = client["V2T"]
+collection = db.get_collection("Teams")
+openai.api_key = "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"
+
+
+
 @app.get('/up')
 async def up():
     return {"message": "App is running..."}
+
+@app.get('/data/sentiment')
+async def sentiment():
+  client = pymongo.MongoClient("mongodb+srv://admin:admin123@cluster1.rhgpgkk.mongodb.net/?retryWrites=true&w=majority")
+  db = client["V2T"]
+  collection = db.get_collection("Teams")
+  for team in collection.find({"name":"Buffalo Bills"}):
+    return team["highlights"]
+
+
 
 @app.post('/transcribe_file')
 async def transcribe_file(file: bytes = File()):
@@ -147,8 +198,22 @@ async def transcribe_file(file: bytes = File()):
     audio = whisper.load_audio("sample.mp4")
     result = model.transcribe(audio)
     os.remove("sample.mp4")
+    # Code to check if numeberst exist in result 
+    if has_number(result):
+      pass 
+    else:
+      post_highlights(result['text'])
+
     return {'result': result}
 
+def has_number(string):
+    """
+    Returns True if string contains any number, False otherwise.
+    """
+    for char in string:
+        if char.isdigit():
+            return True
+    return False
 
 @app.post('/play')
 async def transcribe_file(play: Item):
@@ -174,9 +239,12 @@ def find_distance(yard_line_1, yard_line_2):
       d2 = 50 - number2 
       return abs(d1 + d2) 
   except:
-    base2, number2 = yard_line_2.split(' ')
-    number2 = int(number2)
-    return number2 - 0
+    try:
+      base2, number2 = yard_line_2.split(' ')
+      number2 = int(number2)
+      return number2 - 0
+    except:
+      return 0
 
 def get_rows(plays, previous_yard_line, play_counter):
   current_yard_line = ""
@@ -189,57 +257,88 @@ def get_rows(plays, previous_yard_line, play_counter):
   play_to = 'None'
   p = 'Play'
   result = ''
+  off_form = ''
+  def_form = ''
   for d in plays:
-      if str(d.__class__) == "<class 'transcriber.Play_position'>":
-         DN = d.down.strip() 
-         Distance = d.required_yards.strip()
-         if d.yard_line.strip().split(' ')[0] == 'Buffalo':
-           Yard_line = '-' +  d.yard_line.strip().split(' ')[1]
-         else:
-            Yard_line =  d.yard_line.strip().split(' ')[1]
-         current_yard_line = d.yard_line.strip()
-         
-      if str(d.__class__) == "<class 'transcriber.Pass'>":
-        p = "Play"
-        if d.complete:
-          result = "Complete"
-        else:
-          result = "Incomplete"
-
-        play_by = d.pass_from
-        play_to = d.pass_to
-
-      if str(d.__class__) == "<class 'transcriber.Scramble'>":
-        p = "Rush"
-        result = "Rush"
-        play_by = d.qb
-        play_to = "None"
-
-
-      if str(d.__class__) == "<class 'transcriber.Fieldgoal'>":
-        if d.result:
-          result = "Complete"
-        else:
-          result = "Incomplete"
-        play_by = d.kicker
-        play_to = "None"
-
-      if str(d.__class__) == "<class 'transcriber.Warning'>":
-        result = "Warning"
-
-      if str(d.__class__) == "<class 'transcriber.Touchdown'>":
-        result = "Touchdown"
-        previous_yard_line = ""
-        play_by = d.by
-        play_to = d.to
+      try:
+        if str(d.__class__) == "<class 'transcriber.Play_position'>":
+          DN = d.down.strip() 
+          Distance = d.required_yards.strip()
+          if d.yard_line.strip().split(' ')[0] == 'Buffalo':
+            Yard_line = '-' +  d.yard_line.strip().split(' ')[1]
+          else:
+              Yard_line =  d.yard_line.strip().split(' ')[1]
+          current_yard_line = d.yard_line.strip()
+      except:
+        pass
       
-      if str(d.__class__) == "<class 'transcriber.Extrapoint'>":
-        result = "Touchdown + Extrapoint"
-        previous_yard_line = ""
+      try:
+        if str(d.__class__) == "<class 'transcriber.Pass'>":
+          p = "Play"
+          if d.complete:
+            result = "Complete"
+          else:
+            result = "Incomplete"
+
+          play_by = d.pass_from
+          play_to = d.pass_to
+      except:
+        pass
+
+      try:
+        if str(d.__class__) == "<class 'transcriber.Scramble'>":
+          p = "Rush"
+          result = "Rush"
+          play_by = d.qb
+          play_to = "None"
+      except:
+        pass
+
+      try:
+        if str(d.__class__) == "<class 'transcriber.Fieldgoal'>":
+          if d.result:
+            result = "Complete"
+          else:
+            result = "Incomplete"
+          play_by = d.kicker
+          play_to = "None"
+      except:
+        pass
+
+      try:
+        if str(d.__class__) == "<class 'transcriber.Warning'>":
+          result = "Warning"
+      except:
+        pass
+      
+      try:
+        if str(d.__class__) == "<class 'transcriber.Touchdown'>":
+          result = "Touchdown"
+          previous_yard_line = ""
+          play_by = d.by
+          play_to = d.to
+      except:
+        pass
+
+      try:
+        if str(d.__class__) == "<class 'transcriber.Extrapoint'>":
+          result = "Touchdown + Extrapoint"
+          previous_yard_line = ""
+      except:
+        pass
+
+      try:
+          if str(d.__class__) == "<class 'transcriber.Forms'>":
+              if d.form_type == "OFF":
+                  off_form = d.name 
+              if d.form_type == "DEF":
+                  def_form = d.name
+      except:
+          pass 
   
   gain = find_distance(previous_yard_line, current_yard_line)
   previous_yard_line = current_yard_line
-  row = [play_counter, ODK, DN, Distance, Hash, Yard_line, p, result, gain, play_by, play_to]
+  row = [play_counter, ODK, DN, Distance, Hash, Yard_line, p, result, gain, play_by, play_to, off_form, def_form]
   play_counter += 1
   return row, previous_yard_line, play_counter
 
@@ -252,7 +351,7 @@ def get_name(number):
 
 def extract_name(json):
   try:
-    return json['Audio File']
+    return json['timestamp']
   except KeyError:
     return ""
 
@@ -261,7 +360,15 @@ def get_text(game_id):
     r = requests.get(f"https://data.mongodb-api.com/app/data-ahunl/endpoint/get_transcript_data?game_id={game_id}")
     json_object = r.json()
     json_object.sort(key=extract_name)
-    sentences = [i['Transcript'] for i in json_object]
+    sentences = []
+    for i in json_object:
+      try:
+        if 'transcript' in i.keys():
+            sentences.append(i['transcript'])
+        if 'Transcript' in i.keys():
+            sentences.append(i['Transcript'])
+      except:
+        pass 
     return sentences
   else:
     return game_id
@@ -270,7 +377,7 @@ def get_text(game_id):
 async def generate_report(game_id: str):
     Play = []
     columns = [
-    "Play Numner",
+    "Play Number",
     "ODK",
     "DN",
     "Distance",
@@ -280,9 +387,11 @@ async def generate_report(game_id: str):
     "Result",
     "GNLS",
     "Play By",
-    "Play To"
+    "Play To",
+    "OFF Form",
+    "DEF Form"
     ]
-    sentences = get_text(game_id)
+    sentences = get_text(game_id=game_id)
     if sentences == []:
       df = pd.DataFrame(data=[], columns=columns)
       return  {
@@ -307,92 +416,100 @@ async def generate_report(game_id: str):
             "data":df.to_dict(),
         }
       }
-    
     for sentence in sentences:
-      all_lines = sentence.split(",")
-      for line in all_lines:
-        doc = nlp(line)
-        lemmatized_sentence_list = []
-        for token in doc:
-          lemmatized_sentence_list.append(token.lemma_)
-        lemmatized_sentence = " ".join(lemmatized_sentence_list).lower()
+        all_lines = sentence.split(",")
+        for line in all_lines:
+          doc = nlp(line)
+          lemmatized_sentence_list = []
+          for token in doc:
+            lemmatized_sentence_list.append(token.lemma_)
+          lemmatized_sentence = " ".join(lemmatized_sentence_list).lower()
 
-        if 'and' in lemmatized_sentence and 'at' in lemmatized_sentence:
-          data = line.split('at')
-          yard_line = data[1]
-          down, required_yards = data[0].split('and')
-          position = Play_position(down=down, required_yards=required_yards, yard_line=yard_line)
-          Play.append(position)
+          if 'and' in lemmatized_sentence and 'at' in lemmatized_sentence:
+            data = line.split('at')
+            yard_line = data[1]
+            down, required_yards = data[0].split('and')
+            position = Play_position(down=down, required_yards=required_yards, yard_line=yard_line)
+            Play.append(position)
 
-        if 'pass' in lemmatized_sentence:
-          numbers = re.findall(r'\d+', lemmatized_sentence)
-          if 'incomplete' in lemmatized_sentence:
-            game_pass = Pass(pass_from=numbers[0], pass_to=numbers[1], complete=False)
-          else:
-            game_pass = Pass(pass_from=numbers[0], pass_to=numbers[1], complete=True)
-          Play.append(game_pass)
+          if 'pass' in lemmatized_sentence:
+            numbers = re.findall(r'\d+', lemmatized_sentence)
+            if 'incomplete' in lemmatized_sentence:
+              game_pass = Pass(pass_from=numbers[0], pass_to=numbers[1], complete=False)
+            else:
+              game_pass = Pass(pass_from=numbers[0], pass_to=numbers[1], complete=True)
+            Play.append(game_pass)
 
-        if 'out of bound' in lemmatized_sentence:
-          numbers = re.findall(r'\d+', lemmatized_sentence)
-          player = numbers[0]
-          yard_line = lemmatized_sentence.split('at')[1]
+          if 'out of bound' in lemmatized_sentence:
+            numbers = re.findall(r'\d+', lemmatized_sentence)
+            player = numbers[0]
+            yard_line = lemmatized_sentence.split('at')[1]
 
-          if 'push' in lemmatized_sentence: 
-            run = Run(player=player, yard_line=yard_line, result='push out of bounds')
-          elif 'run' in lemmatized_sentence:
-            run = Run(player=player, yard_line=yard_line, result='run out of bounds')
+            if 'push' in lemmatized_sentence: 
+              run = Run(player=player, yard_line=yard_line, result='push out of bounds')
+            elif 'run' in lemmatized_sentence:
+              run = Run(player=player, yard_line=yard_line, result='run out of bounds')
 
-          Play.append(run)
+            Play.append(run)
 
-        if 'warning' in lemmatized_sentence:
-          numbers = re.findall(r'\d+', lemmatized_sentence)
-          warn = Warning(time=numbers[0])
-          Play.append(warn)
+          if 'warning' in lemmatized_sentence:
+            numbers = re.findall(r'\d+', lemmatized_sentence)
+            warn = Warning(time=numbers[0])
+            Play.append(warn)
 
-        if 'timeout' in lemmatized_sentence:
-          numbers = re.findall(r'\d+', lemmatized_sentence)
-          by = lemmatized_sentence.split('by')[1]
-          timeout = Timeout(number=numbers[0], by=by)
-          Play.append(timeout)
+          if 'timeout' in lemmatized_sentence:
+            numbers = re.findall(r'\d+', lemmatized_sentence)
+            by = lemmatized_sentence.split('by')[1]
+            timeout = Timeout(number=numbers[0], by=by)
+            Play.append(timeout)
 
-        if 'scramble' in lemmatized_sentence:
-          numbers = re.findall(r'\d+', lemmatized_sentence)
-          yard_line = lemmatized_sentence.split('to')[1]
-          scramble = Scramble(qb=numbers[0], yard_line=yard_line)
-          Play.append(scramble)
+          if 'scramble' in lemmatized_sentence:
+            numbers = re.findall(r'\d+', lemmatized_sentence)
+            yard_line = lemmatized_sentence.split('to')[1]
+            scramble = Scramble(qb=numbers[0], yard_line=yard_line)
+            Play.append(scramble)
 
-        if 'touchdown' in lemmatized_sentence:
-          numbers = re.findall(r'\d+', lemmatized_sentence)
-          touchdown = Touchdown(to=numbers[1], by=numbers[0])
-          Play.append(touchdown)
+          if 'touchdown' in lemmatized_sentence:
+            numbers = re.findall(r'\d+', lemmatized_sentence)
+            touchdown = Touchdown(to=numbers[1], by=numbers[0])
+            Play.append(touchdown)
 
-        if 'extra point' in lemmatized_sentence:
-          numbers = re.findall(r'\d+', lemmatized_sentence)
-          if "miss" in lemmatized_sentence:
-            extra = Extrapoint(kicker=numbers[0],result=False)
-          else:
-            extra = Extrapoint(kicker=numbers[0], result=True)
-          Play.append(extra)
+          if 'extra point' in lemmatized_sentence:
+            numbers = re.findall(r'\d+', lemmatized_sentence)
+            if "miss" in lemmatized_sentence:
+              extra = Extrapoint(kicker=numbers[0],result=False)
+            else:
+              extra = Extrapoint(kicker=numbers[0], result=True)
+            Play.append(extra)
 
-        if "field goal" in lemmatized_sentence:
-          numbers = re.findall(r'\d+', lemmatized_sentence)
-          if "miss" in lemmatized_sentence:
-            fieldgoal = Fieldgoal(kicker=numbers[0],result=False)
-          else:
-            fieldgoal = Fieldgoal(kicker=numbers[0], result=True)
-          Play.append(fieldgoal)
+          if "field goal" in lemmatized_sentence:
+            numbers = re.findall(r'\d+', lemmatized_sentence)
+            if "miss" in lemmatized_sentence:
+              fieldgoal = Fieldgoal(kicker=numbers[0],result=False)
+            else:
+              fieldgoal = Fieldgoal(kicker=numbers[0], result=True)
+            Play.append(fieldgoal)
 
-        if 'interception' in lemmatized_sentence:
-          numbers = re.findall(r'\d+', lemmatized_sentence)
-          interception = Interception(qb=numbers[0], to=numbers[1], by=numbers[2])
-          Play.append(interception)
+          if 'interception' in lemmatized_sentence:
+            numbers = re.findall(r'\d+', lemmatized_sentence)
+            interception = Interception(qb=numbers[0], to=numbers[1], by=numbers[2])
+            Play.append(interception)
 
-        if 'punt' in lemmatized_sentence:
-          numbers = re.findall(r'\d+', lemmatized_sentence)
-          final_yard_line = lemmatized_sentence.split('to')
-          punt = Punt(by=numbers[0], final_yard_line=final_yard_line[1])
-          Play.append(punt)
+          if 'punt' in lemmatized_sentence:
+            numbers = re.findall(r'\d+', lemmatized_sentence)
+            final_yard_line = lemmatized_sentence.split('to')
+            punt = Punt(by=numbers[0], final_yard_line=final_yard_line[1])
+            Play.append(punt)
 
+          for i in Playbook['OFF']:
+              if i.lower() in lemmatized_sentence.lower():
+                  form = Forms(name=i, form_type='OFF')
+                  Play.append(form)
+
+          for i in Playbook['DEF']:
+              if i.lower() in lemmatized_sentence.lower():
+                  form = Forms(name=i, form_type='OFF')
+                  Play.append(form)
     play_counter = 1
     tmp_data = []
     data = []
@@ -452,7 +569,7 @@ async def generate_report(game_id: str):
     # Total yards
     total_yards = sum(df['GNLS']) 
     # Passing yards
-    passing_yards = sum(df.loc[df['Play Type']=='Pass']['GNLS']) 
+    passing_yards = sum(df.loc[df['Play Type']=='Play']['GNLS']) 
     # Rusing yards 
     rushing_yards = sum(df.loc[df['Play Type']=='Rush']['GNLS']) 
     # Yards per play 
@@ -480,3 +597,60 @@ async def generate_report(game_id: str):
         "data":df.to_dict(),
     }
  }
+
+
+def post_highlights(sentence):
+  print("Highlighting sentence: ", sentence)
+
+  # Check sentence already exists in highligts
+  for team in collection.find({
+    "name":"Buffalo Bills"}):
+    for highlight in team['highlights']:
+        if sentence == highlight['highlightText']:
+            return True
+
+  messages = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=[
+          {"role": "system", "content": "You are a nfl football coach assistant."},
+          {"role": "user", "content": f"{sentence}"},
+          {"role": "assistant", "content": "Extact the following information to be used for adding to mongo collection playerName, sentiment must be either ['positive', 'negative','neutral'] without explaination , rating between 1 to 10 without explaination , impact between 1 to 10 without explaination"},
+      ]
+  )
+  data = messages['choices'][0]['message']['content'].split("\n")
+  # Remove all empty strings
+  data = list(filter(None, data))
+  added = {}
+  print(data)
+  if "Sorry" in data:
+      return True
+  try:
+    for item in data:
+        key = item.split(':')[0].strip()
+        if key == 'playerName':
+          value = item.split(':')[1].strip()
+          if '#' in value:
+            value = get_name(value.split('#')[0])
+          added[key] = get_name(value.lower())
+        else:
+            value = item.split(':')[1]
+            added[key] = value.lower()
+  except:
+    return True
+  
+  added['gameid'] = "2023-03-17-BUF-PIT"
+  added['timestamp'] = f"00:{random.randint(1,60)}"
+  added['highlightText'] = sentence
+  added['highlightVideo'] = 'https://www.example.com/highlight1.mp4'
+  added['commentRole'] = 'ATT'
+  added['commentBy'] = 'Parth Sonkhia'
+
+  # Update collection with new highlight
+  collection.update_one(
+    {"name":"Buffalo Bills"},
+    {"$push": {"highlights": added}}
+  )
+
+
+  return True 
+
