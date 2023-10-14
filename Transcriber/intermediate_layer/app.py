@@ -42,8 +42,3 @@ async def report():
         response = await client.get(f"{BASE_URL}/report")
     return response.json()
 
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8000)
