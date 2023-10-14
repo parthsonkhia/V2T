@@ -172,7 +172,7 @@ app = FastAPI()
 client = pymongo.MongoClient("mongodb+srv://admin:admin123@cluster1.rhgpgkk.mongodb.net/?retryWrites=true&w=majority")
 db = client["V2T"]
 collection = db.get_collection("Teams")
-openai.api_key = "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"
+openai.api_key = ""
 
 
 
